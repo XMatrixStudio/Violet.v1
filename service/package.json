@@ -1,0 +1,22 @@
+{
+  "name": "violet",
+  "version": "1.0.0",
+  "description": "OAuth System",
+  "main": "app.js",
+  "scripts": {
+    "test": "run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/XMatrixTeam/Violet.git"
+  },
+  "keywords": [
+    "oauth"
+  ],
+  "author": "zhenly",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/XMatrixTeam/Violet/issues"
+  },
+  "homepage": "https://github.com/XMatrixTeam/Violet#readme"
+}
