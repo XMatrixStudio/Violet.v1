@@ -30,10 +30,11 @@
                         <p id="userName" style="font-size: 20px;text-align: center;padding-top: 20px;">Hi, ZhenlyChen</p>
                     </div>
                     <div class="panel-body" style="padding-top: 10%;">
-                        <button class="btn btn-success btn-block" href="#tabViolet" aria-controls="tabViolet" role="tab" data-toggle="tab">网站管理</button>
-                        <button class="btn btn-success btn-block" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab">个人资料</button>
-                        <button class="btn btn-success btn-block" href="#tabPassword" aria-controls="tabPassword" role="tab" data-toggle="tab">修改密码</button>
-                        <button class="btn btn-danger btn-block">退出登陆</button>
+                        <button class="btn btn-success btn-block btn-lg" href="#tabViolet" aria-controls="tabViolet" role="tab" data-toggle="tab"><i class="fa fa-check fa-fw"></i> 网站管理</button>
+                        <button class="btn btn-success btn-block btn-lg" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab"><i class="fa fa-info fa-fw"></i> 个人资料</button>
+                        <button class="btn btn-success btn-block btn-lg" href="#tabPassword" aria-controls="tabPassword" role="tab" data-toggle="tab"><i class="fa fa-key fa-fw"></i> 修改密码</button>
+                        <button class="btn btn-success btn-block btn-lg" href="#tabEmail" aria-controls="tabEmail" role="tab" data-toggle="tab"><i class="fa fa-envelope-o fa-fw"></i> 联系站长</button>
+                        <button class="btn btn-danger btn-block btn-lg"><i class="fa fa-sign-out fa-fw"></i> 退出登陆</button>
                     </div>
                 </div>
             </div>
@@ -57,7 +58,23 @@
                                 </div>
                             </div>
                             <div class="panel-footer" style="text-align: right;">
-                                <button class="btn btn-info">修改信息</button>
+                                <button class="btn btn-info"><i class="fa fa-pencil fa-fw"></i> 修改信息</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade in" id="tabEmail">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <p style="font-size: 30px;margin-bottom: -5px;"><i class="fa fa-envelope-o fa-1x fa-fw"></i> 联系站长</p>
+                            </div>
+                            <div class="panel-body">
+                                <p style="font-size: 20px;"><i class="fa fa-info-circle fa-fw"></i> 新增网站 | 问题咨询 | 合作开发</p>
+                                <div class="input-group" style="padding-bottom: 15px;">
+                                    <textarea id="emailText" class="form-control" type="text" rows="10" cols="100"></textarea>
+                                </div>
+                            </div>
+                            <div class="panel-footer" style="text-align: right;">
+                                <button class="btn btn-info"><i class="fa fa-send fa-fw"></i> 发送信息</button>
                             </div>
                         </div>
                     </div>
@@ -84,7 +101,7 @@
                                 </div>
                             </div>
                             <div class="panel-footer" style="text-align: right;">
-                                <button type="submit" class="btn btn-warning btn-lg" onclick="reSetPwd()">确认</button>
+                                <button type="submit" class="btn btn-warning btn-lg" onclick="reSetPwd()"><i class="fa fa-check fa-fw"></i> 确认</button>
                             </div>
                         </div>
                     </div>
@@ -95,12 +112,12 @@
                             </div>
                             <div class="panel-body" style="padding-top: 5%;">
                                 <div class="col-md-12" v-for="(web,index) in webs" style="padding-bottom: 20px;">
-                                    <div class="col-md-8" style="font-size: 20px;">
+                                    <div class="col-md-7" style="font-size: 20px;">
                                         <i class="fa fa-globe fa-2x fa-fw"></i> {{web.name}}
                                     </div>
-                                    <div class="col-xs-offset-8" style="font-size: 20px;">
-                                        <button class="btn btn-success" :value="index" onclick="toWebData(this)" href="#tabWeb" aria-controls="tabWeb" role="tab" data-toggle="tab">修改资料</button>
-                                        <button class="btn btn-info" :value="index" onclick="signInWeb(this)" href="#tabInfo" aria-controls="tabInfo" role="tab" data-toggle="tab">统计信息</button>
+                                    <div class="col-xs-offset-7" style="font-size: 20px;text-align: right;">
+                                        <button class="btn btn-success" :value="index" onclick="toWebData(this)" href="#tabWeb" aria-controls="tabWeb" role="tab" data-toggle="tab"><i class="fa fa-pencil fa-fw"></i> 修改资料</button>
+                                        <button class="btn btn-success" :value="index" onclick="toWebInfo(this)" href="#tabInfo" aria-controls="tabInfo" role="tab" data-toggle="tab"><i class="fa fa-info-circle fa-fw"></i> 统计信息</button>
                                     </div>
                                 </div>
                             </div>
@@ -109,23 +126,36 @@
                     <div role="tabpanel" class="tab-pane fade in" id="tabWeb">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <p style="font-size: 30px;margin-bottom: -5px;"><i class="fa fa-info fa-1x fa-fw"></i> 网站管理 | 修改资料</p>
+                                <p style="font-size: 30px;margin-bottom: -5px;"><i class="fa fa-info fa-1x fa-fw"></i> <b id="webName"></b> | 修改资料</p>
                             </div>
                             <div class="panel-body">
-                                <div style="padding: 20px 30px 12px 30px;">
-                                    <p style="font-size: 20px;"><i class="fa fa-globe fa-fw"></i> 网站: <b id="webName"></b></p>
+                                <div style="padding: 20px 30px 12px 20px;">
                                     <p style="font-size: 20px;"><i class="fa fa-id-card-o fa-fw"></i> 网站授权ID: <b id="webID"></b></p>
                                 </div>
-                                <div class="col-md-12">
-                                    <div class="input-group" style="padding-bottom: 15px;">
-                                        <span class="input-group-addon" style="font-size: 20px;"><i class="fa fa-globe fa-fw"></i>回调地址</span>
-                                        <input id="callBack" class="form-control" type="text" placeholder="callBackWeb">
-                                    </div>
+                                <div class="input-group" style="padding-bottom: 15px;">
+                                    <span class="input-group-addon" style="font-size: 20px;"><i class="fa fa-globe fa-fw"></i>回调地址</span>
+                                    <input id="callBack" class="form-control" type="text" placeholder="callBackWeb">
                                 </div>
                             </div>
                             <div class="panel-footer" style="text-align: right;">
-                                <button class="btn btn-success" href="#tabViolet" role="tab" data-toggle="tab">返回管理界面</button>
-                                <button id="changeWebData" class="btn btn-info" value="0">修改信息</button>
+                                <button class="btn btn-success" href="#tabViolet" role="tab" data-toggle="tab"><i class="fa fa-arrow-left fa-fw"></i> 返回</button>
+                                <button id="changeWebData" class="btn btn-info" value="0"><i class="fa fa-pencil fa-fw"></i> 确认修改</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade in" id="tabInfo">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <p style="font-size: 30px;margin-bottom: -5px;"><i class="fa fa-info fa-1x fa-fw"></i> <b id="webNameInfo"></b> | 统计信息</p>
+                            </div>
+                            <div class="panel-body">
+                                <div style="padding: 20px 30px 12px 30px;">
+                                    <p style="font-size: 20px;"><i class="fa fa-check fa-fw"></i> 授权次数: <b id="webNum"></b></p>
+                                    <p style="font-size: 20px;"><i class="fa fa-users fa-fw"></i> 用户数量: <b id="webNumMan"></b></p>
+                                </div>
+                            </div>
+                            <div class="panel-footer" style="text-align: right;">
+                                <button class="btn btn-success" href="#tabViolet" role="tab" data-toggle="tab"><i class="fa fa-arrow-left fa-fw"></i> 返回</button>
                             </div>
                         </div>
                     </div>
@@ -157,11 +187,15 @@
             webs: [{
                 id: 10000,
                 name: 'XMatrix Online Judging System',
-                callBackWeb: 'https:/xmoj.zhenly.cn/login.html'
+                callBackWeb: 'https:/xmoj.zhenly.cn/login.html',
+                num: 1024,
+                man: 20,
             }, {
                 id: 10001,
                 name: 'Ice-cream Blog System',
-                callBackWeb: 'https://icytown.com/blog/login.html'
+                callBackWeb: 'https://icytown.com/blog/login.html',
+                num: 2048,
+                man: 50,
             }]
         }
     });
@@ -176,10 +210,17 @@
         }
     });
 
+
     function toWebData(e) {
         $('#webName').html(tabViolet.webs[e.getAttribute('value')].name);
         $('#webID').html(tabViolet.webs[e.getAttribute('value')].id);
         $('#callBack').val(tabViolet.webs[e.getAttribute('value')].callBackWeb);
+    }
+
+    function toWebInfo(e) {
+        $('#webNameInfo').html(tabViolet.webs[e.getAttribute('value')].name);
+        $('#webNum').html(tabViolet.webs[e.getAttribute('value')].num);
+        $('#webNumMan').html(tabViolet.webs[e.getAttribute('value')].man);
     }
 
     function deleteWeb(e) {

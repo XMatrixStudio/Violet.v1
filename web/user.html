@@ -26,8 +26,8 @@
                     是否取消对网站的授权
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-danger" id="sureBtn" value="0">确认</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal"><i class="fa fa-times fa-fw"></i> 否</button>
+                    <button type="button" class="btn btn-danger" id="sureBtn" value="0"><i class="fa fa-check fa-fw"></i> 是</button>
                 </div>
             </div>
         </div>
@@ -48,10 +48,10 @@
                         <p id="userName" style="font-size: 20px;text-align: center;"></p>
                     </div>
                     <div class="panel-body" style="padding-top: 10%;">
-                        <button class="btn btn-success btn-block" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab">个人资料</button>
-                        <button class="btn btn-success btn-block" href="#tabPassword" aria-controls="tabPassword" role="tab" data-toggle="tab">修改密码</button>
-                        <button class="btn btn-success btn-block" href="#tabViolet" aria-controls="tabViolet" role="tab" data-toggle="tab">授权管理</button>
-                        <button class="btn btn-danger btn-block">退出登陆</button>
+                        <button class="btn btn-success btn-block" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab"><i class="fa fa-info fa-fw"></i> 个人资料</button>
+                        <button class="btn btn-success btn-block" href="#tabPassword" aria-controls="tabPassword" role="tab" data-toggle="tab"><i class="fa fa-key fa-fw"></i> 修改密码</button>
+                        <button class="btn btn-success btn-block" href="#tabViolet" aria-controls="tabViolet" role="tab" data-toggle="tab"><i class="fa fa-check fa-fw"></i> 授权管理</button>
+                        <button class="btn btn-danger btn-block"><i class="fa fa-sign-out fa-fw"></i> 退出登陆</button>
                     </div>
                 </div>
             </div>
@@ -95,8 +95,8 @@
                                 </div>
                             </div>
                             <div class="panel-footer" style="text-align: right;">
-                                <button class="btn btn-info">上传头像</button>
-                                <button class="btn btn-info">修改信息</button>
+                                <button class="btn btn-success"><i class="fa fa-upload fa-fw"></i> 上传头像</button>
+                                <button class="btn btn-success"><i class="fa fa-pencil fa-fw"></i> 修改信息</button>
                             </div>
                         </div>
                     </div>
@@ -123,7 +123,7 @@
                                 </div>
                             </div>
                             <div class="panel-footer" style="text-align: right;">
-                                <button type="submit" class="btn btn-warning btn-lg" onclick="reSetPwd()">确认</button>
+                                <button type="submit" class="btn btn-warning btn-lg" onclick="reSetPwd()"><i class="fa fa-check fa-fw"></i> 确认</button>
                             </div>
                         </div>
                     </div>
@@ -137,9 +137,9 @@
                                     <div class="col-md-8" style="font-size: 20px;">
                                         <i class="fa fa-globe fa-2x fa-fw"></i> {{web.name}}
                                     </div>
-                                    <div class="col-xs-offset-8" style="font-size: 20px;">
-                                        <button class="btn btn-success" :value="web.id" onclick="signInWeb(this)">Sgin in</button>
-                                        <button class="btn btn-warning" :value="web.id" :data="web.name" onclick="deleteWeb(this)" data-toggle="modal" data-target="#dialogDiv">取消授权</button>
+                                    <div class="col-xs-offset-8" style="font-size: 20px;text-align: right;">
+                                        <button class="btn btn-success" :value="web.id" onclick="signInWeb(this)"><i class="fa fa-sign-in fa-fw"></i> 登陆</button>
+                                        <button class="btn btn-warning" :value="web.id" :data="web.name" onclick="deleteWeb(this)" data-toggle="modal" data-target="#dialogDiv"><i class="fa fa-times fa-fw"></i> 取消授权</button>
                                     </div>
                                 </div>
                             </div>
