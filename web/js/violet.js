@@ -20,3 +20,16 @@ function setTime() { //设置按钮倒计时
     setTimeout(setTime, 1000);
   }
 }
+
+function setTimeE() { //设置按钮倒计时
+  if (countdownE < 0) {
+    document.getElementById('gCodeE').removeAttribute('disabled');
+    document.getElementById('gCodeE').innerHTML = '获取验证码';
+    countdownE = 120;
+  } else {
+    document.getElementById('gCodeE').setAttribute('disabled', true);
+    document.getElementById('gCodeE').innerHTML = '重新发送(' + countdownE + ')';
+    countdownE--;
+    setTimeout(setTimeE, 1000);
+  }
+}
