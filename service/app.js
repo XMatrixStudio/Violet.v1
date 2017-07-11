@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+var db = require('./mongo.js');
+var User = require('./user.js');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -18,6 +20,8 @@ app.post('/post', function(req, res) {
   console.log(req.body);
   res.send({ state: 'ok' });
 });
+
+app.post('/register', User.register);
 
 // todo
 /*

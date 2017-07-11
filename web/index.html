@@ -195,8 +195,18 @@
     }
 
     function joinIn() {
-        $('#myTab a[href="#joinInDiv"]').tab('show');
-        $('#myTab a[href="#emailDiv"]').tab('show');
+        $.post('/api/register', {
+            name: $('#userNameR').val(),
+            email: $('#userEmailR').val(),
+            password: $('#userPasswordR').val(),
+        }, (data) => {
+            if (data.state == 'failed') {
+                sendNotice('注册失败：' + data.reason);
+            } else {
+                $('#myTab a[href="#joinInDiv"]').tab('show');
+                $('#myTab a[href="#emailDiv"]').tab('show');
+            }
+        });
     }
 
     function emailCheck() {

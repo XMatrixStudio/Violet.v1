@@ -18,5 +18,12 @@
   "bugs": {
     "url": "https://github.com/XMatrixTeam/Violet/issues"
   },
-  "homepage": "https://github.com/XMatrixTeam/Violet#readme"
+  "homepage": "https://github.com/XMatrixTeam/Violet#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "mongodb": "^2.2.30",
+    "mongoose": "^4.11.1",
+    "pomelo-logger": "^0.1.7"
+  }
 }
