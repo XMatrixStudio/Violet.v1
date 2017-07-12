@@ -45,7 +45,7 @@
                             <div class="form-group">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-user-o"></i></span>
-                                    <input type="text" id="userEmail" class="form-control" placeholder="电子邮箱 / 用户名" aria-describedby="inputGroupSuccess1Status">
+                                    <input type="text" id="user" class="form-control" placeholder="电子邮箱 / 用户名" aria-describedby="inputGroupSuccess1Status">
                                     <a class="input-group-addon" href="#joinInDiv" aria-controls="joinInDiv" role="tab" data-toggle="tab" title="注册"><span><i class="fa fa-plus"></i></span></a>
                                 </div>
                             </div>
@@ -142,8 +142,8 @@
                             <p style="padding-top: 20px;"><img class="img-circle" src="pic/10000.png" height="100px" width="100px"></p>
                             <p style="font-size: 17px;">Hi, <b>ZhenlyChen</b></p>
                             <p style="font-size: 17px;">是否授权登陆到 <b>Ice-cream Blog</b></p>
-                            <button class="btn btn-success btn-lg"><i class="fa fa-check fa-fw"></i>确认</button>
-                            <button style="margin-left: 30px;" class="btn btn-warning btn-lg" href="#signInDiv" aria-controls="signInDiv" role="tab" data-toggle="tab"><i class="fa fa-times fa-fw"></i>取消</button>
+                            <button class="btn btn-success btn-lg"><i class="fa fa-check fa-fw"></i>确认授权</button>
+                            <button style="margin-left: 30px;" class="btn btn-warning btn-lg" href="#signInDiv" aria-controls="signInDiv" role="tab" data-toggle="tab"><i class="fa fa-exchange fa-fw"></i>切换账号</button>
                         </div>
                     </div>
 
@@ -192,6 +192,18 @@
     function login() {
         $('#myTab a[href="#signInDiv"]').tab('show');
         $('#myTab a[href="#loginDiv"]').tab('show');
+        $.post('/api/login', {
+            user: $('#user').val(),
+            password: $('#userPassword').val()
+        }, (data) => {
+            if (data.state == 'failed') {
+                sendNotice('登陆失败： ' + data.reason);
+            } else {
+                cleanNotice();
+                $('#myTab a[href="#signInDiv"]').tab('show');
+                $('#myTab a[href="#loginDiv"]').tab('show');
+            }
+        });
     }
 
     function joinIn() {
@@ -203,6 +215,7 @@
             if (data.state == 'failed') {
                 sendNotice('注册失败：' + data.reason);
             } else {
+                cleanNotice();
                 $('#myTab a[href="#joinInDiv"]').tab('show');
                 $('#myTab a[href="#emailDiv"]').tab('show');
             }

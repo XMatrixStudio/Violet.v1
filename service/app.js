@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-var db = require('./mongo.js');
-var User = require('./user.js');
+const db = require('./mongo.js');
+const User = require('./user.js');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -12,20 +12,19 @@ const server = app.listen(30020, '127.0.0.1', function() {
   console.log('App listening at http://%s:%s', host, port);
 });
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
   res.send('User authorization system is running');
 });
 
-app.post('/post', function(req, res) {
-  console.log(req.body);
-  res.send({ state: 'ok' });
-});
-
 app.post('/register', User.register);
-
+app.post('/login', User.login);
+app.post('/getCode', User.getCode);
+app.post('/reset', User.reset);
+app.post('/auth', User.auth);
+app.post('/getInfo', User.getInfo);
 // todo
 /*
-  1. 注册
+  1. 注册 done
   2. 登陆
       2.1 直接post登陆
       2.2 网站服务器post登陆

@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var promise = mongoose.connect('mongodb://zhenly:zhenly@119.29.250.13:27017/test', {
+var promise = mongoose.connect('mongodb://violet:xmatrix-me@119.29.103.176:27017/violet', {
   useMongoClient: true
 });
 var db = mongoose.connection;
@@ -11,6 +11,7 @@ db.on('disconnected', () => {
 }); // 连接断开
 db.on('connected', function() {
   console.log('Mongoose connection Success');
+
 });
 
 // 插入数据
@@ -30,14 +31,22 @@ update 更新
 remove 删除
 count 数量
 find(con, (name), callback)
-find 正则 {'username':{$regex:/m/i}}
+find 正则 {'username':{$regex://i}}
 */
 // -------------------
+
 var siteSchema = mongoose.Schema({
   name: String,
-  url: String
+  url: String,
+  date: Date
 }, { collection: 'sites' }); // 创建数据表骨架
-var siteModel = mongoose.model('sites', siteSchema); // 绑定数据表
 
+var siteModel = mongoose.model('sites', siteSchema); // 绑定数据表
+siteModel.findOne({ name: 'xmoj' }, (err, doc) => {
+  console.log(doc);
+});
+
+//exports.insertDate(siteModel, { name: 'xmoj', url: 'xmoj.zhenly.cn' }, (state) => { console.log(state) });
+//console.log(people);
 // insertDate(siteModel, { name: 'xmoj', url: 'xmoj.zhenly.cn' }, (state) => {console.log(state)});
 // update(siteModel, { 'name': 'xmoj' }, { 'name': 'XMatrixOJ' }, (state) => {console.log(state)});
