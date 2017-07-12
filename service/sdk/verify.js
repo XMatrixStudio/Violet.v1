@@ -99,7 +99,7 @@ exports.getNowTime = () => {
   return Math.ceil(((new Date()).getTime() - 1499860673563) / 1000);
 };
 
-exports.checkId = (req, res, next) => {
+exports.checkToken = (req, res, next) => {
   let token = req.cookies.token;
   let data = exports.decrypt(token).split('&');
   if (data[0] === undefined || data[1] === undefined) {
@@ -113,12 +113,9 @@ exports.checkId = (req, res, next) => {
     userMod.checkToken(data[0], data[1], token, (str) => {
       if (str == 'OK') {
         let userData = data[0] + '&' + verify.getNowTime() + '&' + token;
-        userData = verify.encrypt(userData);
-        res.cookie(
-          'userSession', sessionXXX, { expires: new Date(Date.now() + 10000000), httpOnly: true });
-        res.cookie(
-          'sign', exports.makeAsha(sessionXXX + keyConfig.mysign), { expires: new Date(Date.now() + 10000000), httpOnly: true });
+        res.cookie('token', verify.encrypt(userData), { expires: new Date(Date.now() + 864000000), httpOnly: true });
         res.cookie('isLogin', 1);
+        next();
       } else {
         res.send({ state: 'failed', reason: 'ERR_TOKEN' });
         next('route');

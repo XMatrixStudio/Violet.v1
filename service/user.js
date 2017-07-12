@@ -61,7 +61,7 @@ var register_write = (req, res, next) => {
         password: verify.makeASha(req.body.password),
         email: req.body.email,
         sex: 0,
-        valid: 0
+        valid: false
       }, () => {
         res.send({ state: 'ok' });
       })
@@ -94,9 +94,11 @@ var login_pwd = (req, res, next, val) => {
   if (val.password === verify.makeASha(req.body.password)) {
     site.db.findOne({ sid: req.body.sid }, (err, val) => {
       if (val === null) {
-        sendErr('ERR_SITE');
-      } else {
+        sendErr('NO_SITE');
+      } else if (val.valid === true) {
         send({ state: 'ok', siteName: val.name });
+      } else {
+        sendErr('VALID_EMAIL');
       }
     });
   } else {

@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const db = require('./mongo.js');
+const verify = require('sdk/verify.js');
 const User = require('./user.js');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -20,7 +21,7 @@ app.post('/register', User.register);
 app.post('/login', User.login);
 app.post('/getCode', User.getCode);
 app.post('/reset', User.reset);
-app.post('/auth', User.auth);
+app.post('/auth', verify.checkToken, User.auth);
 app.post('/getInfo', User.getInfo);
 // todo
 /*
