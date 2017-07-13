@@ -51,7 +51,7 @@
                         <button class="btn btn-success btn-block" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab"><i class="fa fa-info fa-fw"></i> 个人资料</button>
                         <button class="btn btn-success btn-block" href="#tabPassword" aria-controls="tabPassword" role="tab" data-toggle="tab"><i class="fa fa-key fa-fw"></i> 修改密码</button>
                         <button class="btn btn-success btn-block" href="#tabViolet" aria-controls="tabViolet" role="tab" data-toggle="tab"><i class="fa fa-check fa-fw"></i> 授权管理</button>
-                        <button class="btn btn-danger btn-block"><i class="fa fa-sign-out fa-fw"></i> 退出登陆</button>
+                        <button class="btn btn-danger btn-block" onclick="logout()"><i class="fa fa-sign-out fa-fw"></i> 退出登陆</button>
                     </div>
                 </div>
             </div>
@@ -64,8 +64,8 @@
                             </div>
                             <div class="panel-body">
                                 <div style="padding: 20px 30px 12px 20px;">
-                                    <p style="font-size: 20px;"><i class="fa fa-envelope-o fa-fw"></i> 邮箱: {{email}}</p>
-                                    <p style="font-size: 20px;"><i class="fa fa-user-circle fa-fw"></i> 用户名: {{name}}</p>
+                                    <p style="font-size: 20px;"><i class="fa fa-envelope-o fa-fw"></i> 邮箱: {{user.email}}</p>
+                                    <p style="font-size: 20px;"><i class="fa fa-user-circle fa-fw"></i> 用户名: {{user.name}}</p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group" style="padding-bottom: 15px;">
@@ -78,19 +78,19 @@
                                     </div>
                                     <div class="input-group" style="padding-bottom: 15px;">
                                         <span class="input-group-addon"><i class="fa fa-birthday-cake fa-fw"></i>生日</span>
-                                        <input id="userPhone" class="form-control" type="text" :placeholder="date">
+                                        <input id="userPhone" class="form-control" type="text" :placeholder="user.date">
                                     </div>
                                     <div class="input-group" style="padding-bottom: 15px;">
                                         <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i>手机号码</span>
-                                        <input id="userPhone" class="form-control" type="text" :placeholder="phone">
+                                        <input id="userPhone" class="form-control" type="text" :placeholder="user.phone">
                                     </div>
                                     <div class="input-group" style="padding-bottom: 15px;">
                                         <span class="input-group-addon"><i class="fa fa-globe fa-fw"></i>个人主页</span>
-                                        <input id="userWeb" class="form-control" type="text" :placeholder="web">
+                                        <input id="userWeb" class="form-control" type="text" :placeholder="user.web">
                                     </div>
                                     <div class="input-group" style="padding-bottom: 15px;">
                                         <span class="input-group-addon"><i class="fa fa-align-left fa-fw"></i>个人简介</span>
-                                        <input id="userText" class="form-control" type="text" :placeholder="detail">
+                                        <input id="userText" class="form-control" type="text" :placeholder="user.detail">
                                     </div>
                                 </div>
                             </div>
@@ -183,12 +183,14 @@
     var tabHome = new Vue({
         el: '#tabHome',
         data: {
-            email: 'zhenlychen@foxmail.com',
-            name: 'ZhenlyChen',
-            web: 'blog.zhenly.cn',
-            date: '1998-04-17',
-            detail: 'Hello, world',
-            phone: '18823066231',
+            user: {
+                email: 'zhenlychen@foxmail.com',
+                name: 'ZhenlyChen',
+                web: 'blog.zhenly.cn',
+                date: '1998-04-17',
+                detail: 'Hello, world',
+                phone: '18823066231',
+            }
         }
     });
 
@@ -203,8 +205,20 @@
         setTime();
     }
     $(function() {
-        $('#userName').html('Hi, ' + tabHome.name);
+        $.post('/api/getUserInfo', {}, (data) => {
+            if (data.state == 'ok') {
+                tabHome.user = data.userData;
+                tabViolet.webs = data.webData;
+                $('#userName').html('Hi, ' + tabHome.name);
+            }
+        });
     });
+
+    function logout() {
+        $.post('/api/logout', {}, (data) => {
+            window.location.href = '/index.html';
+        });
+    }
 </script>
 
 </html>

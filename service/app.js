@@ -34,4 +34,4 @@ app.post('/auth', verify.checkToken, User.auth); //授权登陆
 app.post('/logout', verify.logout); // 退出登陆
 app.post('/validEmail', User.validEmail); // 激活邮箱
 
-app.post('/getInfo', User.getInfo); // 获取用户信息
+app.post('/getUserInfo', verify.checkToken, User.mGetUserInfo);

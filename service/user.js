@@ -172,6 +172,8 @@ var getCode_sendEmail = (req, res, next, code) => {
   res.send({ state: 'ok' });
 };
 
+// ------------------------------------------------
+
 exports.reset = (req, res, next) => {
   userDB.findOne({ email: req.body.email }, (err, val) => {
     var nowTime = new Date();
@@ -319,6 +321,34 @@ var makeNewToken = (req, res, uid, callback) => {
     let userData = uid + '&' + verify.getNowTime() + '&' + token;
     verify.makeUserToken(req, res, userData, () => {
       callback();
+    });
+  });
+};
+
+// -------------------------------------------------------------
+Array.prototype.contains = function(needle) {
+  for (let i in this) {
+    if (this[i] == needle) return true;
+  }
+  return false;
+};
+
+exports.mGetUserInfo = (req, res, next) => {
+  userDB.findOne({ uid: verify.getUserId() }, (err, val) => {
+    makeNewToken(req, res, verify.getUserId(), () => {
+      site.db.find({}, (err, data) => {
+        let webData = [];
+        for (let web in data) {
+          if (val.sites.contains(web.sid)) {
+            webData.push(web);
+          }
+        }
+        res.send({
+          state: 'ok',
+          userData: val,
+          webData: webData,
+        });
+      })
     });
   });
 };

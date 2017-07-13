@@ -91,19 +91,19 @@ exports.makeAMD5 = function(str) {
   return hashSHA.digest('hex');
 }; // 散列
 
-exports.getUserId = (res) => {
+exports.getUserId = (res) => { //获取用户id
   return res.locals.userId;
 };
 
-exports.getNowTime = () => {
+exports.getNowTime = () => { //当前时间
   return Math.ceil(((new Date()).getTime() - 1499860673563) / 1000);
 };
 
-exports.comTime = (time) => {
+exports.comTime = (time) => { //比较时间
   return exports.getNowTime() - Math.ceil((time.getTime() - 1499860673563) / 1000);
 };
 
-exports.checkToken = (req, res, next) => {
+exports.checkToken = (req, res, next) => { // 检测token
   let token = req.cookies.token;
   if (token === undefined || token === null) {
     res.send({ state: 'failed', reason: 'ERR_TOKEN' });
@@ -137,7 +137,7 @@ exports.checkToken = (req, res, next) => {
   }
 };
 
-exports.makeUserToken = (req, res, userData, callback) => {
+exports.makeUserToken = (req, res, userData, callback) => { //设置cookies信息
   res.cookie('remember', req.cookies.remember, { expires: new Date(Date.now() + 8640000000), httpOnly: false });
   res.cookie('isLogin', true, { expires: new Date(Date.now() + 8640000000), httpOnly: false });
   if (req.cookies.remember == 'true') {
@@ -150,14 +150,14 @@ exports.makeUserToken = (req, res, userData, callback) => {
 }
 
 
-exports.logout = (req, res, next) => {
+exports.logout = (req, res, next) => { // 退出登陆
   res.cookie('isLogin', false, { expires: new Date(Date.now() + 8640000000), httpOnly: false });
   res.clearCookie('token');
   res.send({ state: 'ok' });
   next('route');
 };
 
-exports.makeToken = () => {
+exports.makeToken = () => { // 生成网站令牌
   var token = config.webId + '&' + exports.getNowTime();
   token = exports.encrypt(token);
   return token;

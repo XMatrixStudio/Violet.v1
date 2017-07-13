@@ -14,3 +14,18 @@ exports.addTimesById = (id) => {
     val.save((err) => {});
   });
 };
+
+exports.addSite = (id, name, url) => {
+  db.insertDate(siteDB, {
+    sid: id,
+    name: name,
+    url: url,
+    loginTimes: 0
+  });
+};
+
+exports.deleteSite = (condition) => {
+  siteDB.remove(condition, (err) => {
+    if (!err) console.log(err);
+  });
+}
