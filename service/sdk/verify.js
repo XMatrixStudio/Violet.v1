@@ -20,7 +20,7 @@ exports.post('/user/post', { data: 'hello, world' }, (data) => {
 */
 
 const fs = require('fs'); //文件处理
-const config = JSON.parse(fs.readFileSync('../config/violet.json'));
+const config = JSON.parse(fs.readFileSync('./config/violet.json'));
 const https = require('https'); // https模块
 const queryString = require("querystring"); // 转化为格式化对象
 const crypto = require('crypto');
@@ -41,20 +41,20 @@ exports.post = (path, data, callback) => {
     }
   };
   let req = https.request(options, (res) => {
-    if (res.statusCode = !'200') {
-      return callback({ state: 'failed', result: res.statusCode });
+    if (res.statusCode != '200') {
+      return callback({ state: 'failed', reason: res.statusCode });
     }
     res.on('data', (d) => {
       if (d.toString('ascii').indexOf('"state":"ok"') != -1) {
-        return callback({ state: 'success', data: d.toString('ascii') });
+        return callback({ state: 'ok', data: d.toString('ascii') });
       } else {
-        return callback({ state: 'failed', result: d.toString('ascii') });
+        return callback({ state: 'failed', reason: d.toString('ascii') });
       }
     });
   });
   req.write(postData);
   req.on('error', (e) => {
-    return callback({ state: 'failed', result: e });
+    return callback({ state: 'failed', reason: e });
   });
   req.end();
 };
@@ -92,16 +92,28 @@ exports.makeAMD5 = function(str) {
 }; // 散列
 
 exports.getUserId = (res) => {
-  return res.local.verify.userId;
+  return res.locals.userId;
 };
 
 exports.getNowTime = () => {
   return Math.ceil(((new Date()).getTime() - 1499860673563) / 1000);
 };
 
+exports.comTime = (time) => {
+  return exports.getNowTime() - Math.ceil((time.getTime() - 1499860673563) / 1000);
+};
+
 exports.checkToken = (req, res, next) => {
   let token = req.cookies.token;
-  let data = exports.decrypt(token).split('&');
+  if (token === undefined || token === null) {
+    res.send({ state: 'failed', reason: 'ERR_TOKEN' });
+    next('route');
+    return;
+  }
+  token = exports.decrypt(token);
+  var reg = new RegExp('"', "g");
+  token = token.replace(reg, "");
+  let data = token.split('&');
   if (data[0] === undefined || data[1] === undefined) {
     res.send({ state: 'failed', reason: 'ERR_TOKEN' });
     next('route');
@@ -110,27 +122,53 @@ exports.checkToken = (req, res, next) => {
     next('route');
   } else {
     let token = Math.round(Math.random() * 1000000);
-    userMod.checkToken(data[0], data[1], token, (str) => {
+    userMod.DBToken(data[0], data[2], token, (str) => {
       if (str == 'OK') {
-        let userData = data[0] + '&' + verify.getNowTime() + '&' + token;
-        res.cookie('token', verify.encrypt(userData), { expires: new Date(Date.now() + 864000000), httpOnly: true });
-        res.cookie('isLogin', 1);
-        next();
+        res.locals.userId = data[0];
+        let userData = data[0] + '&' + exports.getNowTime() + '&' + token;
+        exports.makeUserToken(req, res, userData, () => {
+          next();
+        });
       } else {
         res.send({ state: 'failed', reason: 'ERR_TOKEN' });
         next('route');
       }
     });
-
   }
 };
 
+exports.makeUserToken = (req, res, userData, callback) => {
+  res.cookie('remember', req.cookies.remember, { expires: new Date(Date.now() + 8640000000), httpOnly: false });
+  res.cookie('isLogin', true, { expires: new Date(Date.now() + 8640000000), httpOnly: false });
+  if (req.cookies.remember == 'true') {
+    res.cookie('token', exports.encrypt(userData), { expires: new Date(Date.now() + 8640000000), httpOnly: true });
+    // 10天后过期
+  } else {
+    res.cookie('token', exports.encrypt(userData), { expires: 0, httpOnly: true });
+  }
+  if (callback !== undefined) callback();
+}
 
-b = exports.encrypt('100&' + exports.getNowTime() + '&' + ram);
 
-//b = exports.encrypt('100&10000000');
-console.log(b);
+exports.logout = (req, res, next) => {
+  res.cookie('isLogin', false, { expires: new Date(Date.now() + 8640000000), httpOnly: false });
+  res.clearCookie('token');
+  res.send({ state: 'ok' });
+  next('route');
+};
 
-/*   c = 'c42f1d260cc0effa8b21f88ef737a253356e69fa675bb347b0fdad3737562fe2';
-  var d = exports.decrypt(c);
-  console.log(d); */
+exports.makeToken = () => {
+  var token = config.webId + '&' + exports.getNowTime();
+  token = exports.encrypt(token);
+  return token;
+};
+
+exports.getUserInfo = (token) => {
+  exports.post('/getInfo', { userToken: token, webToken: makeToken() }, (data) => {
+    if (data.state == 'failed') {
+      console.log('ERR: ' + data.reason);
+    } else {
+      // 处理用户信息 data.data
+    }
+  });
+};

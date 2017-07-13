@@ -9,6 +9,8 @@ var siteDB = db.violet.model('sites', siteSchema);
 exports.db = siteDB;
 
 exports.addTimesById = (id) => {
-  var old = exports.getSiteById(id);
-  siteDB.update({ sid: id }, { $set: { loginTimes: old.loginTimes + 1 } });
+  siteDB.findOne({ sid: id }, (err, val) => {
+    val.loginTimes += 1;
+    val.save((err) => {});
+  });
 };

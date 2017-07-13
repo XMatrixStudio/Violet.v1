@@ -33,3 +33,42 @@ function setTimeE() { //设置按钮倒计时
     setTimeout(setTimeE, 1000);
   }
 }
+
+
+function getCookie(name) { //获取cookie
+  var arr, reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
+  return (arr = document.cookie.match(reg)) ? unescape(arr[2]) : null;
+}
+
+function getQueryString(name) { //获取get参数
+  var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+  var r = window.location.search.substr(1).match(reg);
+  return r != null ? unescape(r[2]) : null;
+}
+
+function regularTest(pattern, id, send) { //正则匹配
+  if (!pattern.test(document.getElementById(id).value)) {
+    sendNotice(send);
+    $('#' + id).focus();
+    $('#' + id).val('');
+    return 0;
+  } else {
+    return 1;
+  }
+}
+
+function isNullTest(id, send) { //非空检测
+  if (document.getElementById(id).value === '') {
+    sendNotice(send);
+    $('#' + id).focus();
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+let formErr = (str, id) => {
+  sendNotice(str);
+  $('#' + id).val('');
+  $('#' + id).focus();
+};

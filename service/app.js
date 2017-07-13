@@ -2,8 +2,10 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const db = require('./mongo.js');
-const verify = require('sdk/verify.js');
+const verify = require('./sdk/verify.js');
 const User = require('./user.js');
+const cookieParser = require('cookie-parser'); // cookie模块
+app.use(cookieParser()); // cookie模块
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -12,28 +14,24 @@ const server = app.listen(30020, '127.0.0.1', function() {
   var port = server.address().port;
   console.log('App listening at http://%s:%s', host, port);
 });
+//日志处理
+app.use((req, res, next) => {
+  var nowTime = new Date();
+  console.log('Time:' + nowTime + '|| Form' + req.url + '||' + req.headers.referer);
+  next();
+});
 
 app.get('/', (req, res) => {
   res.send('User authorization system is running');
 });
 
-app.post('/register', User.register);
-app.post('/login', User.login);
-app.post('/getCode', User.getCode);
-app.post('/reset', User.reset);
-app.post('/auth', verify.checkToken, User.auth);
-app.post('/getInfo', User.getInfo);
-// todo
-/*
-  1. 注册 done
-  2. 登陆
-      2.1 直接post登陆
-      2.2 网站服务器post登陆
-      2.3 授权码登陆
-  3. 邮箱认证get
-  4. 发送邮件验证码
-  5. 发送激活邮件
-  6. 重置密码
-  7. 授权码验证
-  8. 邮件系统
-*/
+app.post('/register', User.register); // 注册
+app.post('/login', User.login); // 登陆
+app.post('/getCode', User.getCode); //获取验证码
+app.post('/reset', User.reset); //重置密码
+app.post('/getUser', verify.checkToken, User.getUser); //获取网站信息
+app.post('/auth', verify.checkToken, User.auth); //授权登陆
+app.post('/logout', verify.logout); // 退出登陆
+app.post('/validEmail', User.validEmail); // 激活邮箱
+
+app.post('/getInfo', User.getInfo); // 获取用户信息

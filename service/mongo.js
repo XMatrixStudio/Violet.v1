@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
-var promise = mongoose.connect('mongodb://violet:xmatrix-me@119.29.103.176:27017/violet', {
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://violet:xmatrix-me@119.29.103.176:27017/violet', {
   useMongoClient: true
 });
 var db = mongoose.connection;
@@ -18,9 +19,7 @@ db.on('connected', function() {
 exports.insertDate = (myModel, data, callback) => {
   var object = new myModel(data); // 创建一个数据对象
   object.save((err, res) => {
-    if (!callback) {
-      err ? callback(err) : callback('Success');
-    }
+    if (callback !== undefined) callback();
   });
 };
 
@@ -35,7 +34,7 @@ find 正则 {'username':{$regex://i}}
 */
 // -------------------
 
-var siteSchema = mongoose.Schema({
+/* var siteSchema = mongoose.Schema({
   name: String,
   url: String,
   date: Date
@@ -44,7 +43,7 @@ var siteSchema = mongoose.Schema({
 var siteModel = mongoose.model('sites', siteSchema); // 绑定数据表
 siteModel.findOne({ name: 'xmoj' }, (err, doc) => {
   console.log(doc);
-});
+}); */
 
 //exports.insertDate(siteModel, { name: 'xmoj', url: 'xmoj.zhenly.cn' }, (state) => { console.log(state) });
 //console.log(people);

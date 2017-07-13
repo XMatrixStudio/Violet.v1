@@ -1,8 +1,7 @@
 const fs = require('fs');
-const keyConfig = JSON.parse(fs.readFileSync('config/key.json'));
 const db = require('./mongo.js');
 const site = require('./site.js');
-const verify = require('sdk/verify.js');
+const verify = require('./sdk/verify.js');
 const spawn = require('child_process').spawn; //异步子进程模块
 var userSchema = db.violet.Schema({
   uid: Number,
@@ -18,7 +17,8 @@ var userSchema = db.violet.Schema({
   valid: Boolean,
   birthTime: Date,
   emailTime: Date,
-  sites: [Number]
+  sites: [Number],
+  class: Number,
 }, { collection: 'users' });
 var userDB = db.violet.model('users', userSchema);
 
@@ -61,10 +61,15 @@ var register_write = (req, res, next) => {
         password: verify.makeASha(req.body.password),
         email: req.body.email,
         sex: 0,
-        valid: false
+        valid: false,
+        class: 0,
       }, () => {
-        res.send({ state: 'ok' });
-      })
+        res.send({
+          state: 'ok',
+          name: req.body.name,
+          email: req.body.email,
+        });
+      });
     }
   });
 };
@@ -90,44 +95,71 @@ exports.login = (req, res, next) => {
   }
 };
 
-var login_pwd = (req, res, next, val) => {
-  if (val.password === verify.makeASha(req.body.password)) {
-    site.db.findOne({ sid: req.body.sid }, (err, val) => {
-      if (val === null) {
-        sendErr('NO_SITE');
-      } else if (val.valid === true) {
-        send({ state: 'ok', siteName: val.name });
-      } else {
-        sendErr('VALID_EMAIL');
-      }
-    });
+var login_pwd = (req, res, next, userVal) => {
+  if (userVal.password === verify.makeASha(req.body.password)) {
+    if (userVal.class === 0) {
+      sendSiteInfo(req, res, next, userVal);
+    } else {
+      makeNewToken(req, res, userVal.uid, () => {
+        res.send({
+          state: 'ok',
+          siteName: 'VIOLET_DEV' // 进入开发者页面
+        });
+      });
+    }
   } else {
     sendErr('ERR_PWD', res, next);
   }
 };
 
+var sendSiteInfo = (req, res, next, userVal) => {
+  site.db.findOne({ sid: req.body.sid }, (err, val) => {
+    if (userVal.valid === true) {
+      let siteId = (val !== null) ? val.sid : 10000;
+      makeNewToken(req, res, userVal.uid, () => {
+        res.send({
+          state: 'ok',
+          siteName: (val !== null) ? val.name : 'VIOLET',
+          email: userVal.email,
+          name: userVal.name
+            // 头像
+        });
+      });
+    } else {
+      makeNewToken(req, res, userVal.uid, () => {
+        res.send({
+          state: 'failed',
+          reason: 'VALID_EMAIL',
+          email: userVal.email,
+          name: userVal.name
+            // 头像
+        });
+      });
+    }
+  });
+}
+
 // ------------------------------------------------
 exports.getCode = (req, res, next) => {
   userDB.findOne({ email: req.body.email }, (err, val) => {
     if (val !== null) {
-      getCode_time(req, res, next, val);
+      var nowTime = new Date();
+      if (val.emailTime === undefined ||
+        (nowTime.getTime() - val.emailTime.getTime()) > 60) {
+        var code = Math.round(100000 + Math.random() * 1000000);
+        val.emailTime = nowTime;
+        val.vCode = code;
+        val.save((err) => {});
+        getCode_sendEmail(req, res, next, code);
+      } else {
+        sendErr('WAITING_TIME', res, next);
+      }
     } else {
       sendErr('NO_EMAIL', res, next);
     }
   });
 };
 
-var getCode_time = (req, res, next, val) => {
-  var nowTime = new Date();
-  if (val.emailTime !== undefined ||
-    (nowTime.getTime() - val.emailTime.getTime()) > 60000) {
-    var code = Math.round(100000 + Math.random() * 1000000);
-    userDB.update({ email: req.body.email }, { $set: { emailTime: nowTime, vCode: code } });
-    getCode_sendEmail(req, res, next, code);
-  } else {
-    sendErr('WAITING_TIME', res, next);
-  }
-};
 
 var getCode_sendEmail = (req, res, next, code) => {
   var mail1 = fs.readFileSync('data/mail1.data');
@@ -135,6 +167,7 @@ var getCode_sendEmail = (req, res, next, code) => {
   fs.writeFile('mail.html', mail1 + code + mail2, (err) => {
     if (err) console.error(err);
     spawn('./sendMail.sh', [req.body.email]);
+    console.log('OK: send a code Email.');
   });
   res.send({ state: 'ok' });
 };
@@ -144,15 +177,12 @@ exports.reset = (req, res, next) => {
     var nowTime = new Date();
     if (val === null) {
       sendErr('NO_EMAIL', res, next);
-    } else if (val.vCode == req.body.vCode &&
-      (nowTime.getTime() - val.emailTime.getTime()) < 600000) {
+    } else if (val.vCode == req.body.vCode && val.emailTime !== undefined && verify.comTime(val.emailTime) < 600) {
       nowTime.setFullYear(2000, 1, 1);
-      userDB.update({ email: req.body.email }, {
-        $set: {
-          password: req.body.password,
-          emailTime: nowTime
-        }
-      });
+      val.password = verify.makeASha(req.body.password);
+      val.emailTime = nowTime;
+      val.valid = true;
+      val.save((err) => {});
       res.send({ state: 'ok' });
     } else {
       sendErr('ERR_CODE', res, next);
@@ -170,9 +200,7 @@ exports.auth = (req, res, next) => {
       userDB.findOne({ uid: userId }, (err, val) => {
         if (val.sites.indexOf(req.body.sid) == -1) {
           val.sites.push(req.body.sid);
-          var _id = val._id;
-          delete val._id;
-          userDB.update({ _id: _id }, val); // 更新数据库
+          val.save((err) => {});
         }
         site.addTimesById(req.body.sid); // 增加访问次数
         res.send({ state: 'ok', url: siteUrl, code: createCode() });
@@ -190,13 +218,16 @@ var createCode = (uid) => {
 
 // ------------------------------------------------
 exports.getInfo = (req, res, next) => {
-  var userData = verify.decrypt(req.body.code).split('&');
-  if (userData[0] === undefined || userData[1] === undefined || (verify.getNowTime() - userData[0]) < 60) {
-    sendErr('TIMEOUT', res, next);
+  var userData = verify.decrypt(req.body.userToken).split('&');
+  var webData = verify.decrypt(req.body.webToken).split('&');
+  if (userData[0] === undefined || userData[1] === undefined || (verify.getNowTime() - userData[0]) > 60) {
+    sendErr('USER_ERR', res, next);
+  } else if (webData[0] === undefined || webData[1] === undefined || (verify.getNowTime() - userData[0]) > 60) {
+    sendErr('WEB_ERR', res, next);
   } else {
-    userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
+    userDB.findOne({ uid: userData[0] }, (err, val) => {
       if (val === null) {
-        sendErr('ERR', res, next);
+        sendErr('USER_ERR', res, next);
       } else {
         res.send({
           state: 'ok',
@@ -213,6 +244,38 @@ exports.getInfo = (req, res, next) => {
   }
 };
 
+// ------------------------------------------------
+//激活邮箱
+exports.validEmail = (req, res, next) => {
+  userDB.findOne({ email: req.body.email }, (err, val) => {
+    if (val === null) { // 邮箱不存在
+      sendErr('NO_EMAIL', res, next);
+    } else {
+      if (val.vCode != req.body.vCode) { //验证码错误
+        sendErr('ERR_CODE', res, next);
+      } else if (verify.comTime(val.emailTime) > 600) {
+        sendErr('TIMEOUT', res, next);
+      } else { //验证码正确
+        var nowTime = new Date();
+        nowTime.setFullYear(2000, 1, 1);
+        userData = val;
+        userData.valid = true;
+        sendSiteInfo(req, res, next, userData);
+        val.valid = true;
+        val.emailTime = nowTime;
+        val.save((err) => {});
+      }
+    }
+  });
+};
+// ------------------------------------------------
+exports.getUser = (req, res, next) => {
+  userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
+    sendSiteInfo(req, res, next, val);
+  });
+};
+
+// ------------------------------------------------
 // ------------------------------------------------
 
 var regExp = (reg, str, err, res, next) => {
@@ -234,15 +297,28 @@ var sendErr = (str, res, next) => {
 };
 
 
-var checkToken = (uid, oldToken, newToken, callback) => {
-  userDB.find({ uid: uid }, (err, val) => {
+exports.DBToken = (uid, oldToken, newToken, callback) => {
+  userDB.findOne({ uid: uid }, (err, val) => {
     if (val === null) {
       callback('NO_USER');
     } else if (val.token != oldToken) {
       callback('ERR_TOKEN');
     } else {
-      userDB.update({ uid: uid }, { $set: { token: newToken } });
+      val.token = newToken;
+      val.save((err) => {});
       callback('OK');
     }
+  });
+};
+
+var makeNewToken = (req, res, uid, callback) => {
+  let token = Math.round(Math.random() * 1000000);
+  userDB.findOne({ uid: uid }, (err, val) => {
+    val.token = token;
+    val.save((err) => {});
+    let userData = uid + '&' + verify.getNowTime() + '&' + token;
+    verify.makeUserToken(req, res, userData, () => {
+      callback();
+    });
   });
 };
