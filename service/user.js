@@ -15,7 +15,7 @@ var userSchema = db.violet.Schema({
   phone: String,
   sex: Number,
   valid: Boolean,
-  birthTime: Date,
+  birthDate: String,
   emailTime: Date,
   sites: [Number],
   class: Number,
@@ -60,7 +60,7 @@ var register_write = (req, res, next) => {
         name: req.body.name,
         password: verify.makeASha(req.body.password),
         email: req.body.email,
-        sex: 0,
+        sex: 2,
         valid: false,
         class: 0,
       }, () => {
@@ -121,8 +121,8 @@ var sendSiteInfo = (req, res, next, userVal) => {
           state: 'ok',
           siteName: (val !== null) ? val.name : 'VIOLET',
           email: userVal.email,
-          name: userVal.name
-            // 头像
+          name: userVal.name,
+          // 头像
         });
       });
     } else {
@@ -141,6 +141,7 @@ var sendSiteInfo = (req, res, next, userVal) => {
 
 // ------------------------------------------------
 exports.getCode = (req, res, next) => {
+  if (!regExp(/^(\w)+(\.\w+)*@(\w)+((\.\w{2,9}))$/, req.body.email, 'ILLEGAL_EMAIL', res, next)) return;
   userDB.findOne({ email: req.body.email }, (err, val) => {
     if (val !== null) {
       var nowTime = new Date();
@@ -175,6 +176,8 @@ var getCode_sendEmail = (req, res, next, code) => {
 // ------------------------------------------------
 
 exports.reset = (req, res, next) => {
+  if (!regExp(/^(\w)+(\.\w+)*@(\w)+((\.\w{2,9}))$/, req.body.email, 'ILLEGAL_EMAIL', res, next)) return;
+
   userDB.findOne({ email: req.body.email }, (err, val) => {
     var nowTime = new Date();
     if (val === null) {
@@ -210,6 +213,20 @@ exports.auth = (req, res, next) => {
     } else {
       sendErr('NO_SITE', res, next)
     }
+  });
+};
+
+exports.noAuth = (req, res, next) => {
+  userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
+    let newList = [];
+    for (let i = 0; i < val.sites.length; ++i) {
+      if (val.sites[i] != req.body.sid) {
+        newList.push(val.sites[i]);
+      }
+    }
+    val.sites = newList;
+    val.save((err) => {});
+    res.send({ state: 'ok' });
   });
 };
 
@@ -299,13 +316,14 @@ var sendErr = (str, res, next) => {
 };
 
 
-exports.DBToken = (uid, oldToken, newToken, callback) => {
+exports.DBToken = (res, uid, oldToken, newToken, callback) => {
   userDB.findOne({ uid: uid }, (err, val) => {
     if (val === null) {
       callback('NO_USER');
     } else if (val.token != oldToken) {
       callback('ERR_TOKEN');
     } else {
+      res.locals.userData = val;
       val.token = newToken;
       val.save((err) => {});
       callback('OK');
@@ -326,29 +344,50 @@ var makeNewToken = (req, res, uid, callback) => {
 };
 
 // -------------------------------------------------------------
-Array.prototype.contains = function(needle) {
-  for (let i in this) {
-    if (this[i] == needle) return true;
-  }
-  return false;
-};
 
 exports.mGetUserInfo = (req, res, next) => {
-  userDB.findOne({ uid: verify.getUserId() }, (err, val) => {
-    makeNewToken(req, res, verify.getUserId(), () => {
-      site.db.find({}, (err, data) => {
-        let webData = [];
-        for (let web in data) {
-          if (val.sites.contains(web.sid)) {
-            webData.push(web);
-          }
-        }
-        res.send({
-          state: 'ok',
-          userData: val,
-          webData: webData,
+  userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
+    site.db.find({}, (err, data) => {
+      let webData = [];
+      for (let i = 0; i < val.sites.length; ++i) {
+        let index = val.sites[i] - 10000;
+        webData.push({
+          sid: data[index].sid,
+          name: data[index].name,
+          url: data[index].url,
         });
-      })
+      }
+      res.send({
+        state: 'ok',
+        userData: {
+          name: val.name,
+          email: val.email,
+          web: val.web,
+          birthDate: val.birthDate,
+          detail: val.detail,
+          phone: val.phone,
+          sex: val.sex,
+          sites: val.sites,
+        },
+        webData: webData,
+      });
     });
+  });
+};
+
+exports.dealUserInfo = (req, res, next) => { //正则判断
+  next();
+};
+
+
+exports.mSetUserInfo = (req, res, next) => {
+  userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
+    val.web = req.body.web;
+    val.birthDate = req.body.birthDate;
+    val.detail = req.body.detail;
+    val.phone = req.body.phone;
+    val.sex = req.body.sex;
+    val.save((err) => {});
+    res.send({ state: 'ok' });
   });
 };

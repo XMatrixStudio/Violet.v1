@@ -11,7 +11,6 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <title>Violet</title>
-
 </head>
 
 <body>
@@ -27,7 +26,22 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" data-dismiss="modal"><i class="fa fa-times fa-fw"></i> 否</button>
-                    <button type="button" class="btn btn-danger" id="sureBtn" value="0"><i class="fa fa-check fa-fw"></i> 是</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="sureBtn" value="0" onclick="noAuth(this)"><i class="fa fa-check fa-fw"></i> 是</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>上传头像</h3>
+                </div>
+                <div class="modal-body">
+                    好大的坑，好难填啊！秀秀求救啊！
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success"><i class="fa fa-upload fa-fw"></i> 修改头像</button>
                 </div>
             </div>
         </div>
@@ -44,7 +58,7 @@
             <div class="col-md-3">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <p style="padding-top: 20px;text-align: center;"><img class="img-circle" src="pic/10000.png" height="120px" width="120px"></p>
+                        <p style="padding-top: 20px;text-align: center;"><img class="img-circle" src="pic/10000.png" height="120px" width="120px" data-toggle="modal" data-target=".bs-example-modal-lg"></p>
                         <p id="userName" style="font-size: 20px;text-align: center;"></p>
                     </div>
                     <div class="panel-body" style="padding-top: 10%;">
@@ -71,14 +85,14 @@
                                     <div class="input-group" style="padding-bottom: 15px;">
                                         <span class="input-group-addon"><i class="fa fa-male fa-fw"></i>性别</span>
                                         <div class="radio">
-                                            <label style="padding-right: 10px;"><input type="radio" name="optionsRadios" id="optionsRadios1" value="option1">男</label>
-                                            <label style="padding-right: 10px;"><input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">女</label>
-                                            <label style="padding-right: 10px;"><input type="radio" name="optionsRadios" id="optionsRadios3" value="option2" checked>保密</label>
+                                            <label style="padding-right: 10px;"><input type="radio" name="optionsRadios" id="optionsRadios1" value="0">男</label>
+                                            <label style="padding-right: 10px;"><input type="radio" name="optionsRadios" id="optionsRadios2" value="1">女</label>
+                                            <label style="padding-right: 10px;"><input type="radio" name="optionsRadios" id="optionsRadios3" value="2" checked>保密</label>
                                         </div>
                                     </div>
                                     <div class="input-group" style="padding-bottom: 15px;">
                                         <span class="input-group-addon"><i class="fa fa-birthday-cake fa-fw"></i>生日</span>
-                                        <input id="userPhone" class="form-control" type="text" :placeholder="user.date">
+                                        <input id="userBirthDate" class="form-control" type="text" :placeholder="user.birthDate">
                                     </div>
                                     <div class="input-group" style="padding-bottom: 15px;">
                                         <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i>手机号码</span>
@@ -90,13 +104,13 @@
                                     </div>
                                     <div class="input-group" style="padding-bottom: 15px;">
                                         <span class="input-group-addon"><i class="fa fa-align-left fa-fw"></i>个人简介</span>
-                                        <input id="userText" class="form-control" type="text" :placeholder="user.detail">
+                                        <input id="userDetail" class="form-control" type="text" :placeholder="user.detail">
                                     </div>
                                 </div>
                             </div>
                             <div class="panel-footer" style="text-align: right;">
-                                <button class="btn btn-success"><i class="fa fa-upload fa-fw"></i> 上传头像</button>
-                                <button class="btn btn-success"><i class="fa fa-pencil fa-fw"></i> 修改信息</button>
+                                <button class="btn btn-success" onclick="upload()" data-toggle="modal" data-target=".bs-example-modal-lg"><i class="fa fa-upload fa-fw"></i> 上传头像</button>
+                                <button class="btn btn-success" onclick="setUserInfo()"><i class="fa fa-pencil fa-fw"></i> 修改信息</button>
                             </div>
                         </div>
                     </div>
@@ -115,11 +129,11 @@
                                 </div>
                                 <div class="form-group input-group">
                                     <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                                    <input type="name" id="newPassword" class="form-control" placeholder="新密码">
+                                    <input type="password" id="userPasswordF" class="form-control" placeholder="新密码">
                                 </div>
                                 <div class="form-group input-group">
                                     <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                                    <input type="name" id="newPassword2" class="form-control" placeholder="新密码">
+                                    <input type="password" id="userPassword2F" class="form-control" placeholder="新密码">
                                 </div>
                             </div>
                             <div class="panel-footer" style="text-align: right;">
@@ -138,8 +152,8 @@
                                         <i class="fa fa-globe fa-2x fa-fw"></i> {{web.name}}
                                     </div>
                                     <div class="col-xs-offset-8" style="font-size: 20px;text-align: right;">
-                                        <button class="btn btn-success" :value="web.id" onclick="signInWeb(this)"><i class="fa fa-sign-in fa-fw"></i> 登陆</button>
-                                        <button class="btn btn-warning" :value="web.id" :data="web.name" onclick="deleteWeb(this)" data-toggle="modal" data-target="#dialogDiv"><i class="fa fa-times fa-fw"></i> 取消授权</button>
+                                        <button class="btn btn-success" :value="web.sid" onclick="signInWeb(this)"><i class="fa fa-sign-in fa-fw"></i> 登陆</button>
+                                        <button class="btn btn-warning" :value="web.sid" :data="web.name" onclick="deleteWeb(this)" data-toggle="modal" data-target="#dialogDiv"><i class="fa fa-times fa-fw"></i> 取消授权</button>
                                     </div>
                                 </div>
                             </div>
@@ -176,7 +190,7 @@
             }, {
                 id: 10001,
                 name: 'Ice-cream Blog System'
-            }]
+            }],
         }
     });
 
@@ -187,9 +201,10 @@
                 email: 'zhenlychen@foxmail.com',
                 name: 'ZhenlyChen',
                 web: 'blog.zhenly.cn',
-                date: '1998-04-17',
+                birthDate: '1998-04-17',
                 detail: 'Hello, world',
                 phone: '18823066231',
+                sex: 0,
             }
         }
     });
@@ -199,26 +214,136 @@
         $('#dialogTitle').html('确认你的操作');
         $('#dialogText').html('是否取消对网站 <b>' + e.getAttribute('data') + '</b> 的授权');
     }
+
+    function signInWeb(e) {
+        $.post('/api/auth', {
+            sid: e.getAttribute('value'),
+        }, (data) => {
+            if (data.state == 'failed') {
+                switch (data.reason) {
+                    case 'ERR_TOKEN':
+                        sendNotice('非法访问，请重新登陆');
+                        logout();
+                        break;
+                    case 'TIMEOUT':
+                        sendNotice('登陆已过期，请重新登陆');
+                        logout();
+                        break;
+                    default:
+                        sendNotice('未知错误: ' + data.reason);
+                }
+            } else {
+                window.open('https://' + data.url + '?code=' + data.code);
+            }
+        });
+    }
+
+    function noAuth(e) {
+        $.post('/api/noAuth', {
+            sid: e.getAttribute('value'),
+        }, (data) => {
+            getUserInfo();
+        });
+    }
+
     var countdown = 120;
 
     function getCode() {
-        setTime();
+        $.post('/api/getCode', {
+            email: tabHome.user.email,
+        }, (data) => {
+            if (data.state == 'ok') {
+                setTime();
+            } else {
+                switch (data.reason) {
+                    case 'NO_EMAIL':
+                        sendNotice('用户信息错误，请重新登陆');
+                        break;
+                    case 'WAITING_TIME':
+                        sendNotice('请一分钟后再尝试获取');
+                        break;
+                    default:
+                        sendNotice('未知错误' + data.reason);
+                }
+            }
+        });
     }
-    $(function() {
+
+    function reSetPwd() {
+        if (isNullTest('vCode', '验证码不能为空')) return;
+        if (isNullTest('userPasswordF', ' 密码不能为空')) return;
+        if (isNullTest('userPassword2F', '密码不能为空')) return;
+        pattern = /^.{6,24}$/;
+        if (!regularTest(pattern, 'userPasswordF', '请输入6-24位的密码')) return;
+        if ($('#userPasswordF').val() != $('#userPassword2F').val()) {
+            formErr('两次输入的密码不一致', 'userPassword2F');
+            return;
+        }
+        $.post('/api/reset', {
+            email: tabHome.user.email,
+            vCode: $('#vCode').val(),
+            password: $('#userPasswordF').val(),
+        }, (data) => {
+            if (data.state == 'ok') {
+                $('#userEmail').val($('#userEmailF').val());
+                sendNotice('重置密码成功');
+                $('#vCode').val('');
+                $('#userPasswordF').val('');
+                $('#userPassword2F').val('');
+            } else {
+                switch (data.reason) {
+                    case 'NO_EMAIL':
+                        sendNotice('用户信息错误，请重新登陆');
+                        break;
+                    case 'ERR_CODE':
+                        formErr('验证码错误', 'vCode');
+                        break;
+                    default:
+                        sendNotice('未知错误' + data.reason);
+                }
+            }
+        });
+    }
+
+    function setUserInfo() {
+        $.post('/api/setUserInfo', {
+            birthDate: $('#userBirthDate').val(),
+            phone: $('#userPhone').val(),
+            web: $('#userWeb').val(),
+            detail: $('#userDetail').val(),
+            sex: $("input[type='radio']:checked").val(),
+        }, (data) => {
+            if (data.state == 'ok') {
+                sendNotice('修改个人信息成功');
+            } else if (data.reason == 'ERR_TOKEN' || data.reason == 'TIMEOOUT') {
+                logout();
+            } else {
+                sendNotice('非法操作');
+            }
+        });
+    }
+
+    function upload() {
+        // 坑太大填不上
+    }
+
+    function getUserInfo() {
         $.post('/api/getUserInfo', {}, (data) => {
             if (data.state == 'ok') {
                 tabHome.user = data.userData;
                 tabViolet.webs = data.webData;
-                $('#userName').html('Hi, ' + tabHome.name);
+                $('#userName').html('Hi, ' + tabHome.user.name);
+                document.getElementsByName('optionsRadios')[tabHome.user.sex].checked = true;
+            } else {
+                logout();
             }
         });
-    });
-
-    function logout() {
-        $.post('/api/logout', {}, (data) => {
-            window.location.href = '/index.html';
-        });
     }
+
+
+    $(function() {
+        getUserInfo();
+    });
 </script>
 
 </html>

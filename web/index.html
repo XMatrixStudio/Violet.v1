@@ -198,7 +198,9 @@
             }, (data) => {
                 if (data.state == 'ok') {
                     if (data.siteName == 'VIOLET') {
-                        window.location.href = '/user.html';
+                        window.location.href = '/user.html'; // 进入用户中心
+                    } else if (data.siteName == 'VIOLET_DEV') {
+                        window.location.href = '/deverlop.html'; // 进入开发者中心
                     } else {
                         showAuthDiv(data.siteName, data.name);
                     }

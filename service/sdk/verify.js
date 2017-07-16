@@ -92,7 +92,18 @@ exports.makeAMD5 = function(str) {
 }; // 散列
 
 exports.getUserId = (res) => { //获取用户id
-  return res.locals.userId;
+  return res.locals.userData.uid;
+};
+
+exports.getUserEmail = (res) => {
+  return res.locals.userData.email;
+};
+
+exports.getUserName = (res) => {
+  return res.locals.userData.name;
+};
+exports.getUserData = (res) => {
+  return res.locals.userData;
 };
 
 exports.getNowTime = () => { //当前时间
@@ -122,9 +133,8 @@ exports.checkToken = (req, res, next) => { // 检测token
     next('route');
   } else {
     let token = Math.round(Math.random() * 1000000);
-    userMod.DBToken(data[0], data[2], token, (str) => {
+    userMod.DBToken(res, data[0], data[2], token, (str) => {
       if (str == 'OK') {
-        res.locals.userId = data[0];
         let userData = data[0] + '&' + exports.getNowTime() + '&' + token;
         exports.makeUserToken(req, res, userData, () => {
           next();

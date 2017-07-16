@@ -24,14 +24,17 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
   res.send('User authorization system is running');
 });
-
+//登陆前API
 app.post('/register', User.register); // 注册
 app.post('/login', User.login); // 登陆
 app.post('/getCode', User.getCode); //获取验证码
 app.post('/reset', User.reset); //重置密码
+app.post('/validEmail', User.validEmail); // 激活邮箱
+app.post('/getInfo', User.getInfo); // 获取用户信息（通过授权码）
+//登陆后API
 app.post('/getUser', verify.checkToken, User.getUser); //获取网站信息
 app.post('/auth', verify.checkToken, User.auth); //授权登陆
 app.post('/logout', verify.logout); // 退出登陆
-app.post('/validEmail', User.validEmail); // 激活邮箱
-
-app.post('/getUserInfo', verify.checkToken, User.mGetUserInfo);
+app.post('/getUserInfo', verify.checkToken, User.mGetUserInfo); //获取用户信息
+app.post('/noAuth', verify.checkToken, User.noAuth); //取消授权
+app.post('/setUserInfo', verify.checkToken, User.dealUserInfo, User.mSetUserInfo); //修改用户信息

@@ -72,3 +72,9 @@ let formErr = (str, id) => {
   $('#' + id).val('');
   $('#' + id).focus();
 };
+
+function logout() {
+  $.post('/api/logout', {}, (data) => {
+    window.location.href = '/index.html';
+  });
+}
