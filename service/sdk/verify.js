@@ -25,7 +25,7 @@ const https = require('https'); // https模块
 const queryString = require("querystring"); // 转化为格式化对象
 const crypto = require('crypto');
 const cookieParser = require('cookie-parser'); // cookie模块
-const userMod = require('../user.js')
+const userMod = require('../user.js');
 
 
 exports.post = (path, data, callback) => {
@@ -157,7 +157,7 @@ exports.makeUserToken = (req, res, userData, callback) => { //设置cookies信�
     res.cookie('token', exports.encrypt(userData), { expires: 0, httpOnly: true });
   }
   if (callback !== undefined) callback();
-}
+};
 
 
 exports.logout = (req, res, next) => { // 退出登陆

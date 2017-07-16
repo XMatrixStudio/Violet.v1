@@ -43,7 +43,7 @@ function getCookie(name) { //获取cookie
 function getQueryString(name) { //获取get参数
   var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
   var r = window.location.search.substr(1).match(reg);
-  return r != null ? unescape(r[2]) : null;
+  return r !== null ? unescape(r[2]) : null;
 }
 
 function regularTest(pattern, id, send) { //正则匹配

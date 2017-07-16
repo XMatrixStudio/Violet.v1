@@ -137,7 +137,7 @@ var sendSiteInfo = (req, res, next, userVal) => {
       });
     }
   });
-}
+};
 
 // ------------------------------------------------
 exports.getCode = (req, res, next) => {
@@ -211,7 +211,7 @@ exports.auth = (req, res, next) => {
         res.send({ state: 'ok', url: siteUrl, code: createCode() });
       });
     } else {
-      sendErr('NO_SITE', res, next)
+      sendErr('NO_SITE', res, next);
     }
   });
 };
@@ -304,7 +304,7 @@ var regExp = (reg, str, err, res, next) => {
     sendErr(str, res, next);
     return false;
   }
-}
+};
 
 var sendErr = (str, res, next) => {
   console.log('ERR: ' + str);
