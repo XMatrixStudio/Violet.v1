@@ -47,18 +47,18 @@
                             </div>
                             <div class="panel-body">
                                 <div style="padding: 20px 30px 12px 20px;">
-                                    <p style="font-size: 20px;"><i class="fa fa-envelope-o fa-fw"></i> 邮箱: {{email}}</p>
-                                    <p style="font-size: 20px;"><i class="fa fa-user-circle fa-fw"></i> 用户名: {{name}} ({{level}})</p>
+                                    <p style="font-size: 20px;"><i class="fa fa-envelope-o fa-fw"></i> 邮箱: {{user.email}}</p>
+                                    <p style="font-size: 20px;"><i class="fa fa-user-circle fa-fw"></i> 用户名: {{user.name}}</p>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="input-group" style="padding-bottom: 15px;">
                                         <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i>手机号码</span>
-                                        <input id="userPhone" class="form-control" type="text" :placeholder="phone">
+                                        <input id="userPhone" class="form-control" type="text" :placeholder="user.phone">
                                     </div>
                                 </div>
                             </div>
                             <div class="panel-footer" style="text-align: right;">
-                                <button class="btn btn-info"><i class="fa fa-pencil fa-fw"></i> 修改信息</button>
+                                <button class="btn btn-info" onclick="setUserInfo()"><i class="fa fa-pencil fa-fw"></i> 修改信息</button>
                             </div>
                         </div>
                     </div>
@@ -74,7 +74,7 @@
                                 </div>
                             </div>
                             <div class="panel-footer" style="text-align: right;">
-                                <button class="btn btn-info"><i class="fa fa-send fa-fw"></i> 发送信息</button>
+                                <button class="btn btn-info" onclick="sendFeedback()"><i class="fa fa-send fa-fw"></i> 发送信息</button>
                             </div>
                         </div>
                     </div>
@@ -93,11 +93,11 @@
                                 </div>
                                 <div class="form-group input-group">
                                     <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                                    <input type="name" id="newPassword" class="form-control" placeholder="新密码">
+                                    <input type="password" id="userPasswordF" class="form-control" placeholder="新密码">
                                 </div>
                                 <div class="form-group input-group">
                                     <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                                    <input type="name" id="newPassword2" class="form-control" placeholder="新密码">
+                                    <input type="password" id="userPassword2F" class="form-control" placeholder="新密码">
                                 </div>
                             </div>
                             <div class="panel-footer" style="text-align: right;">
@@ -116,7 +116,7 @@
                                         <i class="fa fa-globe fa-2x fa-fw"></i> {{web.name}}
                                     </div>
                                     <div class="col-xs-offset-7" style="font-size: 20px;text-align: right;">
-                                        <button class="btn btn-success" :value="index" onclick="toWebData(this)" href="#tabWeb" aria-controls="tabWeb" role="tab" data-toggle="tab"><i class="fa fa-pencil fa-fw"></i> 修改资料</button>
+                                        <button class="btn btn-success" :value="index" onclick="toWebData(this)" href="#tabWeb" aria-controls="tabWeb" role="tab" data-toggle="tab"><i class="fa fa-pencil fa-fw"></i> 基础信息</button>
                                         <button class="btn btn-success" :value="index" onclick="toWebInfo(this)" href="#tabInfo" aria-controls="tabInfo" role="tab" data-toggle="tab"><i class="fa fa-info-circle fa-fw"></i> 统计信息</button>
                                     </div>
                                 </div>
@@ -132,14 +132,17 @@
                                 <div style="padding: 20px 30px 12px 20px;">
                                     <p style="font-size: 20px;"><i class="fa fa-id-card-o fa-fw"></i> 网站授权ID: <b id="webID"></b></p>
                                 </div>
+                                <div style="padding: 20px 30px 12px 20px;">
+                                    <p style="font-size: 20px;"><i class="fa fa-id-card-o fa-fw"></i> 授权跳转URL: <b id="webHelpUrl"></b></p>
+                                </div>
                                 <div class="input-group" style="padding-bottom: 15px;">
                                     <span class="input-group-addon" style="font-size: 20px;"><i class="fa fa-globe fa-fw"></i>回调地址</span>
-                                    <input id="callBack" class="form-control" type="text" placeholder="callBackWeb">
+                                    <input id="callBack" class="form-control" type="text" placeholder="url">
                                 </div>
                             </div>
                             <div class="panel-footer" style="text-align: right;">
                                 <button class="btn btn-success" href="#tabViolet" role="tab" data-toggle="tab"><i class="fa fa-arrow-left fa-fw"></i> 返回</button>
-                                <button id="changeWebData" class="btn btn-info" value="0"><i class="fa fa-pencil fa-fw"></i> 确认修改</button>
+                                <button id="changeWebData" class="btn btn-info" value="0" onclick="setWebInfo()"><i class="fa fa-pencil fa-fw"></i> 确认修改</button>
                             </div>
                         </div>
                     </div>
@@ -151,7 +154,6 @@
                             <div class="panel-body">
                                 <div style="padding: 20px 30px 12px 30px;">
                                     <p style="font-size: 20px;"><i class="fa fa-check fa-fw"></i> 授权次数: <b id="webNum"></b></p>
-                                    <p style="font-size: 20px;"><i class="fa fa-users fa-fw"></i> 用户数量: <b id="webNumMan"></b></p>
                                 </div>
                             </div>
                             <div class="panel-footer" style="text-align: right;">
@@ -184,49 +186,41 @@
     var tabViolet = new Vue({
         el: '#tabViolet',
         data: {
-            webs: [{
-                id: 10000,
-                name: 'XMatrix Online Judging System',
-                callBackWeb: 'https:/xmoj.zhenly.cn/login.html',
-                num: 1024,
-                man: 20,
-            }, {
-                id: 10001,
-                name: 'Ice-cream Blog System',
-                callBackWeb: 'https://icytown.com/blog/login.html',
-                num: 2048,
-                man: 50,
-            }]
+            webs: [],
         }
     });
+    /* testData
+            {
+                sid: 10000,
+                name: 'XMatrix Online Judging System',
+                url: 'https:/xmoj.zhenly.cn/login.html',
+                loginTimes: 1024,
+            }
+            {
+                email: 'zhenlychen@foxmail.com',
+                name: 'ZhenlyChen',
+                phone: '18823066231',
+            }
+    */
 
     var tabHome = new Vue({
         el: '#tabHome',
         data: {
-            email: 'zhenlychen@foxmail.com',
-            name: 'ZhenlyChen',
-            level: '开发者',
-            phone: '18823066231',
-        }
+            user: {},
+        },
     });
-
 
     function toWebData(e) {
         $('#webName').html(tabViolet.webs[e.getAttribute('value')].name);
-        $('#webID').html(tabViolet.webs[e.getAttribute('value')].id);
-        $('#callBack').val(tabViolet.webs[e.getAttribute('value')].callBackWeb);
+        $('#webID').html(tabViolet.webs[e.getAttribute('value')].sid);
+        $('#webHelpUrl').html('https://oauth.xmatrix.studio/?sid=' +
+            tabViolet.webs[e.getAttribute('value')].sid + '&parma=自定义参数');
+        $('#callBack').val(tabViolet.webs[e.getAttribute('value')].url);
     }
 
     function toWebInfo(e) {
         $('#webNameInfo').html(tabViolet.webs[e.getAttribute('value')].name);
-        $('#webNum').html(tabViolet.webs[e.getAttribute('value')].num);
-        $('#webNumMan').html(tabViolet.webs[e.getAttribute('value')].man);
-    }
-
-    function deleteWeb(e) {
-        document.getElementById('sureBtn').value = e.getAttribute('value');
-        $('#dialogTitle').html('确认你的操作');
-        $('#dialogText').html('是否取消对网站 <b>' + e.getAttribute('data') + '</b> 的授权');
+        $('#webNum').html(tabViolet.webs[e.getAttribute('value')].loginTimes);
     }
 
     $(function() {
@@ -235,8 +229,133 @@
     var countdown = 120;
 
     function getCode() {
-        setTime();
+        $.post('/api/getCode', {
+            email: tabHome.user.email,
+        }, (data) => {
+            if (data.state == 'ok') {
+                setTime();
+            } else {
+                switch (data.reason) {
+                    case 'NO_EMAIL':
+                        sendNotice('用户信息错误，请重新登陆');
+                        break;
+                    case 'WAITING_TIME':
+                        sendNotice('请一分钟后再尝试获取');
+                        break;
+                    default:
+                        sendNotice('未知错误' + data.reason);
+                }
+            }
+        });
     }
+
+    function reSetPwd() {
+        if (isNullTest('vCode', '验证码不能为空')) return;
+        if (isNullTest('userPasswordF', ' 密码不能为空')) return;
+        if (isNullTest('userPassword2F', '密码不能为空')) return;
+        pattern = /^.{6,24}$/;
+        if (!regularTest(pattern, 'userPasswordF', '请输入6-24位的密码')) return;
+        if ($('#userPasswordF').val() != $('#userPassword2F').val()) {
+            formErr('两次输入的密码不一致', 'userPassword2F');
+            return;
+        }
+        $.post('/api/reset', {
+            email: tabHome.user.email,
+            vCode: $('#vCode').val(),
+            password: $('#userPasswordF').val(),
+        }, (data) => {
+            if (data.state == 'ok') {
+                $('#userEmail').val($('#userEmailF').val());
+                sendNotice('重置密码成功');
+                $('#vCode').val('');
+                $('#userPasswordF').val('');
+                $('#userPassword2F').val('');
+            } else {
+                switch (data.reason) {
+                    case 'NO_EMAIL':
+                        sendNotice('用户信息错误，请重新登陆');
+                        break;
+                    case 'ERR_CODE':
+                        formErr('验证码错误', 'vCode');
+                        break;
+                    default:
+                        sendNotice('未知错误' + data.reason);
+                }
+            }
+        });
+    }
+
+    function setUserInfo() {
+        $.post('/api/setUserInfo', {
+            birthDate: 'null',
+            phone: $('#userPhone').val(),
+            web: 'null',
+            detail: 'null',
+            sex: 2,
+        }, (data) => {
+            if (data.state == 'ok') {
+                sendNotice('修改个人信息成功');
+                getUserInfo();
+            } else if (data.reason == 'ERR_TOKEN' || data.reason == 'TIMEOOUT') {
+                logout();
+            } else {
+                sendNotice('非法操作');
+            }
+        });
+    }
+
+    function getUserInfo(callBack) {
+        $.post('/api/getUserInfo', {}, (data) => {
+            if (data.state == 'ok') {
+                tabHome.user = data.userData;
+                $('#userName').html('Hi, ' + tabHome.user.name);
+                callBack();
+            } else {
+                logout();
+            }
+        });
+    }
+
+    function getWebInfo() {
+        $.post('/api/getWebInfo', {}, (data) => {
+            if (data.state == 'ok') {
+                tabViolet.webs = data.data;
+            } else {
+                logout();
+            }
+        });
+    }
+
+    function setWebInfo() {
+        $.post('/api/setWebInfo', {
+            url: $('#callBack').val()
+        }, (data) => {
+            if (data.state == 'ok') {
+                getWebInfo();
+            } else if (data.reason == 'NO_AUTH' || data.reason == 'NO_SITE') {
+                sendNotice('设置失败,错误代码：' + data.reason);
+            } else {
+                logout();
+            }
+        });
+    }
+
+    function sendFeedback() {
+        $.post('/api/sendFeedback', {
+            text: $('#emailText').val()
+        }, (data) => {
+            if (data.state == 'ok') {
+                sendNotice('发送成功');
+                $('#emailText').val('');
+            } else {
+                logout();
+            }
+        });
+    }
+
+    $(function() {
+        getUserInfo(getWebInfo);
+    });
 </script>
 
 </html>

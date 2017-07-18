@@ -25,7 +25,7 @@ var userDB = db.violet.model('users', userSchema);
 
 // ------------------------------------------------
 exports.register = (req, res, next) => {
-  if (!regExp(/^[a-zA-Z0-9]{3,10}$/, req.body.name, 'ILLEGAL_NAME', res, next)) return;
+  if (!regExp(/^[a-zA-Z0-9]{3,20}$/, req.body.name, 'ILLEGAL_NAME', res, next)) return;
   if (!regExp(/^(\w)+(\.\w+)*@(\w)+((\.\w{2,9}))$/, req.body.email, 'ILLEGAL_EMAIL', res, next)) return;
   userDB.count({ name: req.body.name }, (err, val) => {
     if (err) {
@@ -113,27 +113,28 @@ var login_pwd = (req, res, next, userVal) => {
 };
 
 var sendSiteInfo = (req, res, next, userVal) => {
-  site.db.findOne({ sid: req.body.sid }, (err, val) => {
+  site.findSiteById(req.body.sid, (val) => {
     if (userVal.valid === true) {
-      let siteId = (val !== null) ? val.sid : 10000;
-      makeNewToken(req, res, userVal.uid, () => {
-        res.send({
-          state: 'ok',
-          siteName: (val !== null) ? val.name : 'VIOLET',
-          email: userVal.email,
-          name: userVal.name,
-          // 头像
-        });
+      let siteName = val.name;
+      let className = 'VIOLET';
+      if (userVal.class == 1) {
+        siteName = 'VIOLET_DEV';
+        className = 'VIOLET_DEV';
+      }
+      res.send({
+        state: 'ok',
+        siteName: (val !== null) ? siteName : className,
+        email: userVal.email,
+        name: userVal.name,
+        // 头像
       });
     } else {
-      makeNewToken(req, res, userVal.uid, () => {
-        res.send({
-          state: 'failed',
-          reason: 'VALID_EMAIL',
-          email: userVal.email,
-          name: userVal.name
-            // 头像
-        });
+      res.send({
+        state: 'failed',
+        reason: 'VALID_EMAIL',
+        email: userVal.email,
+        name: userVal.name
+          // 头像
       });
     }
   });
@@ -198,7 +199,7 @@ exports.reset = (req, res, next) => {
 // ------------------------------------------------
 
 exports.auth = (req, res, next) => {
-  site.db.findOne({ sid: req.body.sid }, (err, val) => {
+  site.findSiteById(req.body.sid, (val) => {
     if (val !== null) {
       var userId = verify.getUserId(res);
       var siteUrl = val.url;
@@ -347,16 +348,7 @@ var makeNewToken = (req, res, uid, callback) => {
 
 exports.mGetUserInfo = (req, res, next) => {
   userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
-    site.db.find({}, (err, data) => {
-      let webData = [];
-      for (let i = 0; i < val.sites.length; ++i) {
-        let index = val.sites[i] - 10000;
-        webData.push({
-          sid: data[index].sid,
-          name: data[index].name,
-          url: data[index].url,
-        });
-      }
+    site.findSiteByArray(val.sites, (webData) => {
       res.send({
         state: 'ok',
         userData: {
@@ -375,11 +367,6 @@ exports.mGetUserInfo = (req, res, next) => {
   });
 };
 
-exports.dealUserInfo = (req, res, next) => { //正则判断
-  next();
-};
-
-
 exports.mSetUserInfo = (req, res, next) => {
   userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
     val.web = req.body.web;
@@ -390,4 +377,13 @@ exports.mSetUserInfo = (req, res, next) => {
     val.save((err) => {});
     res.send({ state: 'ok' });
   });
+};
+
+exports.sendFeedback = (req, res, next) => {
+  fs.writeFile('mail.html', req.body.text, (err) => {
+    if (err) console.error(err);
+    spawn('./sendMail.sh', ['zhenlychen@foxmail.com']);
+    console.log('OK: send a code Email.');
+  });
+  res.send({ state: 'ok' });
 };

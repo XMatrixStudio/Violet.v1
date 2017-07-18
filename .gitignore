@@ -2,3 +2,4 @@ service/node_modules
 .vs/
 .jshintrc
 package-lock.json
+local/

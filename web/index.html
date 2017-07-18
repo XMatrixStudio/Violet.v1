@@ -139,8 +139,8 @@
                         <div class="panel-heading" style="font-size: 17px;"><i class="fa fa-check fa-1x fa-fw"></i>授权确认</div>
                         <div class="panel-body" style="text-align: center;padding-bottom: 30px;">
                             <p style="padding-top: 20px;"><img class="img-circle" src="pic/10000.png" height="100px" width="100px"></p>
-                            <p style="font-size: 17px;">Hi, <b id="userNameA">ZhenlyChen</b></p>
-                            <p style="font-size: 17px;">是否授权登陆到 <b id="siteNameA">Ice-cream Blog</b></p>
+                            <p style="font-size: 17px;">Hi, <b id="userNameA">null</b></p>
+                            <p style="font-size: 17px;">是否授权登陆到 <b id="siteNameA">null</b></p>
                             <button class="btn btn-success btn-lg" onclick="auth()"><i class="fa fa-check fa-fw"></i>确认授权</button>
                             <button onclick="logout()" style="margin-left: 30px;" class="btn btn-warning btn-lg" href="#loginDiv" aria-controls="loginDiv" role="tab" data-toggle="tab"><i class="fa fa-exchange fa-fw"></i>切换账号</button>
                         </div>
@@ -151,8 +151,8 @@
                             <i href="#loginDiv" aria-controls="loginDiv" role="tab" data-toggle="tab" class="fa fa-arrow-left fa-fw" style="margin-right: 20px;" onclick="logout()"></i> 激活账号
                         </div>
                         <div class="panel-body" style="text-align: center;padding-bottom: 30px;">
-                            <p style="font-size: 17px;">Hi, <b id="userNameE">ZhenlyChen</b></p>
-                            <p style="font-size: 17px;">请输入验证码来激活你的账号 <b id="userEmailE">zhenlychen@foxmail.com</b></p>
+                            <p style="font-size: 17px;">Hi, <b id="userNameE">null</b></p>
+                            <p style="font-size: 17px;">请输入验证码来激活你的账号 <b id="userEmailE">null</b></p>
                             <div class="form-group input-group">
                                 <span class="input-group-addon"><i class="fa fa-gg"></i></span>
                                 <input type="name" id="vCodeE" class="form-control" placeholder="邮箱验证码">
@@ -200,7 +200,7 @@
                     if (data.siteName == 'VIOLET') {
                         window.location.href = '/user.html'; // 进入用户中心
                     } else if (data.siteName == 'VIOLET_DEV') {
-                        window.location.href = '/deverlop.html'; // 进入开发者中心
+                        window.location.href = '/developer.html'; // 进入开发者中心
                     } else {
                         showAuthDiv(data.siteName, data.name);
                     }
@@ -259,7 +259,7 @@
                 if (data.siteName == 'VIOLET') {
                     window.location.href = '/user.html'; // 进入用户中心
                 } else if (data.siteName == 'VIOLET_DEV') {
-                    window.location.href = '/deverlop.html'; // 进入开发者中心
+                    window.location.href = '/developer.html'; // 进入开发者中心
                 } else {
                     showAuthDiv(data.siteName, data.name);
                 }
@@ -295,8 +295,8 @@
         if (isNullTest('userEmailR', '注册失败： 邮箱不能为空')) return;
         if (isNullTest('userPasswordR', '注册失败： 密码不能为空')) return;
         if (isNullTest('userPassword2R', '注册失败： 密码不能为空')) return;
-        let pattern = /^[a-zA-Z0-9]{3,10}$/;
-        if (!regularTest(pattern, 'userNameR', '请输入有效的用户名(字母数字组成的3-10位)')) return;
+        let pattern = /^[a-zA-Z0-9]{3,20}$/;
+        if (!regularTest(pattern, 'userNameR', '请输入有效的用户名(字母数字组成的3-20位)')) return;
         pattern = /^(\w)+(.\w+)*@(\w)+((.\w{2,9}))$/;
         if (!regularTest(pattern, 'userEmailR', '请输入有效的邮箱')) return;
         pattern = /^.{6,24}$/;

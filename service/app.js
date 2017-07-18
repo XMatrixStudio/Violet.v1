@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const db = require('./mongo.js');
 const verify = require('./sdk/verify.js');
 const User = require('./user.js');
+const Site = require('./site.js');
 const cookieParser = require('cookie-parser'); // cookie模块
 app.use(cookieParser()); // cookie模块
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -35,6 +36,11 @@ app.post('/getInfo', User.getInfo); // 获取用户信息（通过授权码）
 app.post('/getUser', verify.checkToken, User.getUser); //获取网站信息
 app.post('/auth', verify.checkToken, User.auth); //授权登陆
 app.post('/logout', verify.logout); // 退出登陆
+//用户中心专属
 app.post('/getUserInfo', verify.checkToken, User.mGetUserInfo); //获取用户信息
 app.post('/noAuth', verify.checkToken, User.noAuth); //取消授权
-app.post('/setUserInfo', verify.checkToken, User.dealUserInfo, User.mSetUserInfo); //修改用户信息
+app.post('/setUserInfo', verify.checkToken, User.mSetUserInfo); //修改用户信息
+//开发者中心专属
+app.post('/getWebInfo', verify.checkToken, Site.getWebInfo); //获取网站信息
+app.post('/setWebInfo', verify.checkToken, Site.setWebInfo); //设置网站信息
+app.post('/sendFeedback', verify.checkToken, User.sendFeedback); //发送反馈信息
