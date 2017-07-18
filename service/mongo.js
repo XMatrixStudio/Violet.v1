@@ -5,7 +5,7 @@ mongoose.connect('mongodb://violet:xmatrix-me@119.29.103.176:27017/violet', {
 });
 var db = mongoose.connection;
 db.on('error', () => {
-  console.error.bind(console, 'connection error:')
+  console.error.bind(console, 'connection error:');
 }); // 发生错误
 db.on('disconnected', () => {
   console.log('Mongoose connection disconnected');
@@ -14,7 +14,6 @@ db.on('connected', function() {
   console.log('Mongoose connection Success');
 
 });
-
 // 插入数据
 exports.insertDate = (myModel, data, callback) => {
   var object = new myModel(data); // 创建一个数据对象
@@ -22,7 +21,6 @@ exports.insertDate = (myModel, data, callback) => {
     if (callback !== undefined) callback();
   });
 };
-
 exports.violet = mongoose;
 
 /*

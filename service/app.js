@@ -40,7 +40,6 @@ app.post('/logout', verify.logout); // 退出登陆
 app.post('/getUserInfo', verify.checkToken, User.mGetUserInfo); //获取用户信息
 app.post('/noAuth', verify.checkToken, User.noAuth); //取消授权
 app.post('/setUserInfo', verify.checkToken, User.mSetUserInfo); //修改用户信息
-//开发者中心专属
 app.post('/getWebInfo', verify.checkToken, Site.getWebInfo); //获取网站信息
 app.post('/setWebInfo', verify.checkToken, Site.setWebInfo); //设置网站信息
-app.post('/sendFeedback', verify.checkToken, User.sendFeedback); //发送反馈信息
+app.post('/addWeb', verify.checkToken, Site.addSite); //增加网站

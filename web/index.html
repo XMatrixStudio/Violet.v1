@@ -199,8 +199,6 @@
                 if (data.state == 'ok') {
                     if (data.siteName == 'VIOLET') {
                         window.location.href = '/user.html'; // 进入用户中心
-                    } else if (data.siteName == 'VIOLET_DEV') {
-                        window.location.href = '/developer.html'; // 进入开发者中心
                     } else {
                         showAuthDiv(data.siteName, data.name);
                     }
@@ -258,8 +256,6 @@
             } else {
                 if (data.siteName == 'VIOLET') {
                     window.location.href = '/user.html'; // 进入用户中心
-                } else if (data.siteName == 'VIOLET_DEV') {
-                    window.location.href = '/developer.html'; // 进入开发者中心
                 } else {
                     showAuthDiv(data.siteName, data.name);
                 }
@@ -285,7 +281,7 @@
                         sendNotice('未知错误: ' + data.reason);
                 }
             } else {
-                window.location.href = 'https://' + data.url + '?code=' + data.code + '&param=' + getQueryString('param');
+                window.location.href = 'https://' + data.url + '?code=' + data.code + '&args=' + getQueryString('args');
             }
         });
     }

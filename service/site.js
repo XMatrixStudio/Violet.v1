@@ -4,7 +4,8 @@ var siteSchema = db.violet.Schema({
   sid: Number,
   name: String,
   url: String,
-  loginTimes: Number
+  loginTimes: Number,
+  uid: Number,
 }, { collection: 'sites' });
 var siteDB = db.violet.model('sites', siteSchema);
 exports.db = siteDB;
@@ -16,20 +17,28 @@ exports.addTimesById = (id) => {
   });
 };
 
-exports.addSite = (id, name, url) => {
-  db.insertDate(siteDB, {
-    sid: id,
-    name: name,
-    url: url,
-    loginTimes: 0
-  });
+exports.addSite = (req, res, next) => {
+  if (verify.getUserData(res).class == 1) {
+    siteDB.count({}, (err, val) => {
+      db.insertDate(siteDB, {
+        sid: val + 10000,
+        name: req.body.name,
+        url: req.body.url,
+        loginTimes: 0,
+        uid: verify.getUserId(res),
+      });
+    });
+    res.send({ state: 'ok' });
+  } else {
+    res.send({ state: 'failed', reason: 'NO_AUTH' });
+  }
 };
 
 exports.deleteSite = (condition) => {
   siteDB.remove(condition, (err) => {
     if (!err) console.log(err);
   });
-}
+};
 
 exports.findSiteByArray = (list, callback) => {
   siteDB.find({}, (err, val) => {
@@ -47,7 +56,7 @@ exports.findSiteByArray = (list, callback) => {
 };
 
 exports.findSiteById = (sid, callback) => {
-  siteDB.find({ sid: sid }, (err, val) => {
+  siteDB.findOne({ sid: sid }, (err, val) => {
     callback(val);
   });
 };
@@ -67,6 +76,7 @@ exports.setWebInfo = (req, res, next) => {
       });
     } else if (verify.getUserId(res) == val.uid) {
       val.url = req.body.url;
+      val.name = req.body.name;
       val.save((err) => {});
       res.send({ state: 'ok' });
     } else {
@@ -74,6 +84,6 @@ exports.setWebInfo = (req, res, next) => {
         state: 'failed',
         reason: 'NO_AUTH',
       });
-    };
+    }
   });
 };

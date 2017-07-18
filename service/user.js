@@ -97,16 +97,7 @@ exports.login = (req, res, next) => {
 
 var login_pwd = (req, res, next, userVal) => {
   if (userVal.password === verify.makeASha(req.body.password)) {
-    if (userVal.class === 0) {
-      sendSiteInfo(req, res, next, userVal);
-    } else {
-      makeNewToken(req, res, userVal.uid, () => {
-        res.send({
-          state: 'ok',
-          siteName: 'VIOLET_DEV' // 进入开发者页面
-        });
-      });
-    }
+    sendSiteInfo(req, res, next, userVal);
   } else {
     sendErr('ERR_PWD', res, next);
   }
@@ -115,26 +106,30 @@ var login_pwd = (req, res, next, userVal) => {
 var sendSiteInfo = (req, res, next, userVal) => {
   site.findSiteById(req.body.sid, (val) => {
     if (userVal.valid === true) {
-      let siteName = val.name;
-      let className = 'VIOLET';
-      if (userVal.class == 1) {
-        siteName = 'VIOLET_DEV';
-        className = 'VIOLET_DEV';
+      let theSiteName;
+      if (val === null) {
+        theSiteName = 'VIOLET';
+      } else {
+        theSiteName = val.name;
       }
-      res.send({
-        state: 'ok',
-        siteName: (val !== null) ? siteName : className,
-        email: userVal.email,
-        name: userVal.name,
-        // 头像
+      makeNewToken(req, res, userVal.uid, () => {
+        res.send({
+          state: 'ok',
+          siteName: theSiteName,
+          email: userVal.email,
+          name: userVal.name,
+          // 头像
+        });
       });
     } else {
-      res.send({
-        state: 'failed',
-        reason: 'VALID_EMAIL',
-        email: userVal.email,
-        name: userVal.name
+      makeNewToken(req, res, userVal.uid, () => {
+        res.send({
+          state: 'failed',
+          reason: 'VALID_EMAIL',
+          email: userVal.email,
+          name: userVal.name,
           // 头像
+        });
       });
     }
   });
@@ -209,7 +204,7 @@ exports.auth = (req, res, next) => {
           val.save((err) => {});
         }
         site.addTimesById(req.body.sid); // 增加访问次数
-        res.send({ state: 'ok', url: siteUrl, code: createCode() });
+        res.send({ state: 'ok', url: siteUrl, code: createCode(verify.getUserId(res)) });
       });
     } else {
       sendErr('NO_SITE', res, next);
@@ -240,9 +235,13 @@ var createCode = (uid) => {
 exports.getInfo = (req, res, next) => {
   var userData = verify.decrypt(req.body.userToken).split('&');
   var webData = verify.decrypt(req.body.webToken).split('&');
-  if (userData[0] === undefined || userData[1] === undefined || (verify.getNowTime() - userData[0]) > 60) {
+  console.log(verify.decrypt(req.body.userToken));
+  console.log(userData[0]);
+  console.log(userData[1]);
+  console.log((verify.getNowTime() - userData[1]));
+  if (userData[0] === undefined || userData[1] === undefined || (verify.getNowTime() - userData[1]) > 60) {
     sendErr('USER_ERR', res, next);
-  } else if (webData[0] === undefined || webData[1] === undefined || (verify.getNowTime() - userData[0]) > 60) {
+  } else if (webData[0] === undefined || webData[1] === undefined || (verify.getNowTime() - webData[1]) > 60) {
     sendErr('WEB_ERR', res, next);
   } else {
     userDB.findOne({ uid: userData[0] }, (err, val) => {
@@ -257,7 +256,7 @@ exports.getInfo = (req, res, next) => {
           phone: val.phone,
           detail: val.detail,
           sex: val.sex,
-          birthTime: val.birthTime
+          birthTime: val.birthTime,
         });
       }
     });
@@ -360,6 +359,7 @@ exports.mGetUserInfo = (req, res, next) => {
           phone: val.phone,
           sex: val.sex,
           sites: val.sites,
+          class: val.class,
         },
         webData: webData,
       });
@@ -377,13 +377,4 @@ exports.mSetUserInfo = (req, res, next) => {
     val.save((err) => {});
     res.send({ state: 'ok' });
   });
-};
-
-exports.sendFeedback = (req, res, next) => {
-  fs.writeFile('mail.html', req.body.text, (err) => {
-    if (err) console.error(err);
-    spawn('./sendMail.sh', ['zhenlychen@foxmail.com']);
-    console.log('OK: send a code Email.');
-  });
-  res.send({ state: 'ok' });
 };

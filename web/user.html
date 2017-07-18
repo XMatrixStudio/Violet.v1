@@ -65,6 +65,7 @@
                         <button class="btn btn-success btn-block" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab"><i class="fa fa-info fa-fw"></i> 个人资料</button>
                         <button class="btn btn-success btn-block" href="#tabPassword" aria-controls="tabPassword" role="tab" data-toggle="tab"><i class="fa fa-key fa-fw"></i> 修改密码</button>
                         <button class="btn btn-success btn-block" href="#tabViolet" aria-controls="tabViolet" role="tab" data-toggle="tab"><i class="fa fa-check fa-fw"></i> 授权管理</button>
+                        <button id="devButton" class="btn btn-success btn-block" href="#tabVioletDev" aria-controls="tabVioletDev" role="tab" data-toggle="tab"><i class="fa fa-check fa-fw"></i> 我的网站</button>
                         <button class="btn btn-danger btn-block" onclick="logout()"><i class="fa fa-sign-out fa-fw"></i> 退出登陆</button>
                     </div>
                 </div>
@@ -111,6 +112,53 @@
                             <div class="panel-footer" style="text-align: right;">
                                 <button class="btn btn-success" onclick="upload()" data-toggle="modal" data-target=".bs-example-modal-lg"><i class="fa fa-upload fa-fw"></i> 上传头像</button>
                                 <button class="btn btn-success" onclick="setUserInfo()"><i class="fa fa-pencil fa-fw"></i> 修改信息</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade in" id="tabVioletDev">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <p style="font-size: 30px;margin-bottom: -5px;"><i class="fa fa-check fa-1x fa-fw"></i> 网站管理</p>
+                            </div>
+                            <div class="panel-body" style="padding-top: 5%;">
+                                <div class="col-md-12" v-for="(web,index) in webs" style="padding-bottom: 20px;">
+                                    <div class="col-md-7" style="font-size: 20px;">
+                                        <i class="fa fa-globe fa-2x fa-fw"></i> {{web.name}}
+                                    </div>
+                                    <div class="col-xs-offset-7" style="font-size: 20px;text-align: right;">
+                                        <button class="btn btn-success" :value="index" onclick="toWebData(this)" href="#tabWebDev" aria-controls="tabWebDev" role="tab" data-toggle="tab"><i class="fa fa-pencil fa-fw"></i> 详细信息</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade in" id="tabWebDev">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <p style="font-size: 30px;margin-bottom: -5px;"><i class="fa fa-info fa-1x fa-fw"></i> <b id="webName"></b> | 修改资料</p>
+                            </div>
+                            <div class="panel-body">
+                                <div style="padding: 20px 30px 12px 20px;">
+                                    <p style="font-size: 20px;"><i class="fa fa-id-card-o fa-fw"></i> 网站授权ID: <b id="webID"></b></p>
+                                </div>
+                                <div style="padding: 20px 30px 12px 20px;">
+                                    <p style="font-size: 20px;"><i class="fa fa-id-card-o fa-fw"></i> 授权跳转URL: <b id="webHelpUrl"></b></p>
+                                </div>
+                                <div style="padding: 20px 30px 12px 20px;">
+                                    <p style="font-size: 20px;"><i class="fa fa-check fa-fw"></i> 授权次数: <b id="webNum"></b></p>
+                                </div>
+                                <div class="input-group" style="padding-bottom: 15px;">
+                                    <span class="input-group-addon" style="font-size: 20px;"><i class="fa fa-globe fa-fw"></i>网站名字</span>
+                                    <input id="theSiteName" class="form-control" type="text" placeholder="name">
+                                </div>
+                                <div class="input-group" style="padding-bottom: 15px;">
+                                    <span class="input-group-addon" style="font-size: 20px;"><i class="fa fa-globe fa-fw"></i>回调地址</span>
+                                    <input id="callBack" class="form-control" type="text" placeholder="url">
+                                </div>
+                            </div>
+                            <div class="panel-footer" style="text-align: right;">
+                                <button class="btn btn-success" href="#tabVioletDev" role="tab" data-toggle="tab"><i class="fa fa-arrow-left fa-fw"></i> 返回</button>
+                                <button id="changeWebData" href="#tabVioletDev" role="tab" data-toggle="tab" class="btn btn-info" value="0" onclick="setWebInfo()"><i class="fa fa-pencil fa-fw"></i> 确认修改</button>
                             </div>
                         </div>
                     </div>
@@ -181,27 +229,15 @@
 <script src="https://cdn.bootcss.com/vue/2.3.3/vue.js"></script>
 <script src="js/violet.js"></script>
 <script>
-    /* testDAta
-                {
-                    id: 10000,
-                    name: 'XMatrix Online Judging System'
-                }, {
-                    id: 10001,
-                    name: 'Ice-cream Blog System'
-                }
-                {
-                    email: 'zhenlychen@foxmail.com',
-                    name: 'ZhenlyChen',
-                    web: 'blog.zhenly.cn',
-                    birthDate: '1998-04-17',
-                    detail: 'Hello, world',
-                    phone: '18823066231',
-                    sex: 0,
-                }
-
-         */
     var tabViolet = new Vue({
         el: '#tabViolet',
+        data: {
+            webs: [],
+        }
+    });
+
+    var tabVioletDev = new Vue({
+        el: '#tabVioletDev',
         data: {
             webs: [],
         }
@@ -339,12 +375,53 @@
                 tabViolet.webs = data.webData;
                 $('#userName').html('Hi, ' + tabHome.user.name);
                 document.getElementsByName('optionsRadios')[tabHome.user.sex].checked = true;
+                if (tabHome.user.class == 1) {
+                    getWebInfo();
+                } else {
+                    $('#devButton').hide();
+                }
             } else {
                 logout();
             }
         });
     }
 
+    function setWebInfo() {
+        $.post('/api/setWebInfo', {
+            sid: $('#webID').html(),
+            url: $('#callBack').val(),
+            name: $('#theSiteName').val(),
+        }, (data) => {
+            if (data.state == 'ok') {
+                sendNotice('修改信息成功');
+                getWebInfo();
+            } else if (data.reason == 'NO_AUTH' || data.reason == 'NO_SITE') {
+                sendNotice('设置失败,错误代码：' + data.reason);
+            } else {
+                logout();
+            }
+        });
+    }
+
+    function toWebData(e) {
+        $('#webName').html(tabVioletDev.webs[e.getAttribute('value')].name);
+        $('#theSiteName').val(tabVioletDev.webs[e.getAttribute('value')].name);
+        $('#webID').html(tabVioletDev.webs[e.getAttribute('value')].sid);
+        $('#webHelpUrl').html('https://oauth.xmatrix.studio/?sid=' +
+            tabVioletDev.webs[e.getAttribute('value')].sid + '&args=');
+        $('#callBack').val(tabVioletDev.webs[e.getAttribute('value')].url);
+        $('#webNum').html(tabVioletDev.webs[e.getAttribute('value')].loginTimes);
+    }
+
+    function getWebInfo() {
+        $.post('/api/getWebInfo', {}, (data) => {
+            if (data.state == 'ok') {
+                tabVioletDev.webs = data.data;
+            } else {
+                logout();
+            }
+        });
+    }
 
     $(function() {
         getUserInfo();

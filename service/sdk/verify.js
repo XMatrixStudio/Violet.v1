@@ -73,6 +73,8 @@ exports.decrypt = (str) => {
     var decipher = crypto.createDecipher('aes192', config.key);
     var dec = decipher.update(data[0], 'hex', 'utf8');
     dec += decipher.final('utf8');
+    var reg = new RegExp('"', "g");
+    dec = dec.replace(reg, "");
     return dec;
   } else {
     return 'ERR';
@@ -122,8 +124,6 @@ exports.checkToken = (req, res, next) => { // 检测token
     return;
   }
   token = exports.decrypt(token);
-  var reg = new RegExp('"', "g");
-  token = token.replace(reg, "");
   let data = token.split('&');
   if (data[0] === undefined || data[1] === undefined) {
     res.send({ state: 'failed', reason: 'ERR_TOKEN' });
@@ -174,7 +174,7 @@ exports.makeToken = () => { // 生成网站令牌
 };
 
 exports.getUserInfo = (token) => {
-  exports.post('/getInfo', { userToken: token, webToken: makeToken() }, (data) => {
+  exports.post('/api/getInfo', { userToken: token, webToken: exports.makeToken() }, (data) => {
     if (data.state == 'failed') {
       console.log('ERR: ' + data.reason);
     } else {
