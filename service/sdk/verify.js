@@ -46,7 +46,7 @@ exports.post = (path, data, callback) => {
     }
     res.on('data', (d) => {
       if (d.toString('ascii').indexOf('"state":"ok"') != -1) {
-        return callback({ state: 'ok', data: d.toString('ascii') });
+        return callback({ state: 'ok', data: JSON.parse(d.toString('ascii')) });
       } else {
         return callback({ state: 'failed', reason: d.toString('ascii') });
       }
@@ -173,12 +173,9 @@ exports.makeToken = () => { // 生成网站令牌
   return token;
 };
 
-exports.getUserInfo = (token) => {
+exports.getUserInfo = (token, callback) => {
   exports.post('/api/getInfo', { userToken: token, webToken: exports.makeToken() }, (data) => {
-    if (data.state == 'failed') {
-      console.log('ERR: ' + data.reason);
-    } else {
-      // 处理用户信息 data.data
-    }
+    if (data.state == 'failed') console.log('ERR: ' + data.reason);
+    callback(data);
   });
 };
