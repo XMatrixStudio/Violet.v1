@@ -19,20 +19,23 @@ exports.addTimesById = (id) => {
 };
 
 exports.addSite = (req, res, next) => {
-  if (verify.getUserData(res).class == 1) {
-    siteDB.count({}, (err, val) => {
-      db.insertDate(siteDB, {
-        sid: val + 10000,
-        name: req.body.name,
-        url: req.body.url,
-        loginTimes: 0,
-        uid: verify.getUserId(res),
+  siteDB.count({ uid: verify.getUserId(res) }, (err, count) => {
+    if (count < verify.getUserData(res).class) {
+      siteDB.count({}, (err, val) => {
+        db.insertDate(siteDB, {
+          sid: val + 10000,
+          name: 'New Web',
+          url: 'www.example.com',
+          loginTimes: 0,
+          uid: verify.getUserId(res),
+          key: randomString(20),
+        });
       });
-    });
-    res.send({ state: 'ok' });
-  } else {
-    res.send({ state: 'failed', reason: 'NO_AUTH' });
-  }
+      res.send({ state: 'ok', count: count + 1, max: verify.getUserData(res).class });
+    } else {
+      res.send({ state: 'failed', reason: 'MAX', max: verify.getUserData(res).class });
+    }
+  });
 };
 
 exports.deleteSite = (condition) => {

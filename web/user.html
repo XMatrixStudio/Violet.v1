@@ -11,6 +11,11 @@
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <title>Violet</title>
+  <style>
+    body {
+      min-width: 500px;
+    }
+  </style>
 </head>
 
 <body>
@@ -62,11 +67,11 @@
             <p id="userName" style="font-size: 20px;text-align: center;"></p>
           </div>
           <div class="panel-body" style="padding-top: 10%;">
-            <button class="btn btn-success btn-block" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab"><i class="fa fa-info fa-fw"></i> 个人资料</button>
-            <button class="btn btn-success btn-block" href="#tabPassword" aria-controls="tabPassword" role="tab" data-toggle="tab"><i class="fa fa-key fa-fw"></i> 修改密码</button>
-            <button class="btn btn-success btn-block" href="#tabViolet" aria-controls="tabViolet" role="tab" data-toggle="tab"><i class="fa fa-check fa-fw"></i> 授权管理</button>
-            <button id="devButton" class="btn btn-success btn-block" href="#tabVioletDev" aria-controls="tabVioletDev" role="tab" data-toggle="tab"><i class="fa fa-check fa-fw"></i> 我的网站</button>
-            <button class="btn btn-danger btn-block" onclick="logout()"><i class="fa fa-sign-out fa-fw"></i> 退出登陆</button>
+            <button onclick="cleanNotice()" class="btn btn-success btn-block" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab"><i class="fa fa-info fa-fw"></i> 个人资料</button>
+            <button onclick="cleanNotice()" class="btn btn-success btn-block" href="#tabPassword" aria-controls="tabPassword" role="tab" data-toggle="tab"><i class="fa fa-key fa-fw"></i> 修改密码</button>
+            <button onclick="cleanNotice()" class="btn btn-success btn-block" href="#tabViolet" aria-controls="tabViolet" role="tab" data-toggle="tab"><i class="fa fa-check fa-fw"></i> 授权管理</button>
+            <button onclick="cleanNotice()" id="devButton" class="btn btn-success btn-block" href="#tabVioletDev" aria-controls="tabVioletDev" role="tab" data-toggle="tab"><i class="fa fa-globe fa-fw"></i> 我的网站</button>
+            <button onclick="logout()" class="btn btn-danger btn-block"><i class="fa fa-sign-out fa-fw"></i> 退出登陆</button>
           </div>
         </div>
       </div>
@@ -75,7 +80,7 @@
           <div role="tabpanel" class="tab-pane active fade in" id="tabHome">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <p style="font-size: 30px;margin-bottom: -5px;"><i class="fa fa-info fa-1x fa-fw"></i> 个人资料</p>
+                <p style="font-size: 22px;margin-bottom: -5px;"><i class="fa fa-info fa-1x fa-fw"></i> 个人资料</p>
               </div>
               <div class="panel-body">
                 <div style="padding: 20px 30px 12px 20px;">
@@ -118,36 +123,39 @@
           <div role="tabpanel" class="tab-pane fade in" id="tabVioletDev">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <p style="font-size: 30px;margin-bottom: -5px;"><i class="fa fa-check fa-1x fa-fw"></i> 网站管理</p>
+                <p style="font-size: 22px;margin-bottom: -5px;"><i class="fa fa-globe fa-1x fa-fw"></i> 网站管理</p>
               </div>
               <div class="panel-body" style="padding-top: 5%;">
                 <div class="col-md-12" v-for="(web,index) in webs" style="padding-bottom: 20px;">
                   <div class="col-md-7" style="font-size: 20px;">
-                    <i class="fa fa-globe fa-2x fa-fw"></i> {{web.name}}
+                    <i class="fa fa-circle-thin fa-fw"></i> {{web.name}}
                   </div>
                   <div class="col-xs-offset-7" style="font-size: 20px;text-align: right;">
                     <button class="btn btn-success" :value="index" onclick="toWebData(this)" href="#tabWebDev" aria-controls="tabWebDev" role="tab" data-toggle="tab"><i class="fa fa-pencil fa-fw"></i> 详细信息</button>
                   </div>
                 </div>
               </div>
+              <div class="panel-footer">
+                <button class="btn btn-success" onclick="addSite()"><i class="fa fa-plus fa-fw"></i> 新增网站</button>
+              </div>
             </div>
           </div>
           <div role="tabpanel" class="tab-pane fade in" id="tabWebDev">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <p style="font-size: 30px;margin-bottom: -5px;"><i class="fa fa-info fa-1x fa-fw"></i> <b id="webName"></b> | 修改资料</p>
+                <p style="font-size: 22px;margin-bottom: -5px;"><i class="fa fa-info fa-1x fa-fw"></i> <b id="webName"></b> | 修改资料</p>
               </div>
               <div class="panel-body">
-                <div style="padding: 20px 30px 12px 20px;">
+                <div style="padding: 20px 30px 0px 20px;">
                   <p style="font-size: 20px;"><i class="fa fa-id-card-o fa-fw"></i> 网站授权ID: <b id="webID"></b></p>
                 </div>
-                <div style="padding: 20px 30px 12px 20px;">
+                <div style="padding: 3px 30px 0px 20px;">
                   <p style="font-size: 20px;"><i class="fa fa-id-card-o fa-fw"></i> 授权跳转URL: <b id="webHelpUrl"></b></p>
                 </div>
-                <div style="padding: 20px 30px 12px 20px;">
+                <div style="padding: 3px 30px 0px 20px;">
                   <p style="font-size: 20px;"><i class="fa fa-check fa-fw"></i> 授权次数: <b id="webNum"></b></p>
                 </div>
-                <div style="padding: 20px 30px 12px 20px;">
+                <div style="padding: 3px 30px 0px 20px;">
                   <p style="font-size: 20px;"><i class="fa fa-id-card fa-fw"></i> 网站Key: <b id="webKey"></b>
                     <button style="margin-left: 50px;" class="btn btn-success" onclick="changeKey()"><i class="fa fa-key fa-fw"></i> 更改key</button>
                   </p>
@@ -158,7 +166,7 @@
                 </div>
                 <div class="input-group" style="padding-bottom: 15px;">
                   <span class="input-group-addon" style="font-size: 20px;"><i class="fa fa-globe fa-fw"></i>回调地址</span>
-                  <input id="callBack" class="form-control" type="text" placeholder="url">
+                  <input id="callBack" class="form-control" type="text" placeholder="如: oauth.xmatrix.studio/user.html">
                 </div>
               </div>
               <div class="panel-footer" style="text-align: right;">
@@ -170,7 +178,7 @@
           <div role="tabpanel" class="tab-pane fade in" id="tabPassword">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <p style="font-size: 30px;margin-bottom: -5px;"><i class="fa fa-key fa-1x fa-fw"></i> 修改密码</p>
+                <p style="font-size: 22px;margin-bottom: -5px;"><i class="fa fa-key fa-1x fa-fw"></i> 修改密码</p>
               </div>
               <div class="panel-body" style="padding-top: 3%;">
                 <div class="form-group input-group">
@@ -197,12 +205,12 @@
           <div role="tabpanel" class="tab-pane fade in" id="tabViolet">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <p style="font-size: 30px;margin-bottom: -5px;"><i class="fa fa-check fa-1x fa-fw"></i> 授权管理</p>
+                <p style="font-size: 22px;margin-bottom: -5px;"><i class="fa fa-check fa-1x fa-fw"></i> 授权管理</p>
               </div>
               <div class="panel-body" style="padding-top: 5%;">
                 <div class="col-md-12" v-for="web in webs" style="padding-bottom: 20px;">
                   <div class="col-md-8" style="font-size: 20px;">
-                    <i class="fa fa-globe fa-2x fa-fw"></i> {{web.name}}
+                    <i class="fa fa-globe fa-fw"></i> {{web.name}}
                   </div>
                   <div class="col-xs-offset-8" style="font-size: 20px;text-align: right;">
                     <button class="btn btn-success" :value="web.sid" onclick="signInWeb(this)"><i class="fa fa-sign-in fa-fw"></i> 登陆</button>
@@ -351,6 +359,21 @@
     });
   }
 
+  function addSite() {
+    $.post('/api/addSite', {}, (data) => {
+      if (data.state == 'ok') {
+        sendNotice('新增网站成功(当前账号限额<b>' + data.count + '/' + data.max + '</b>)');
+        getWebInfo();
+      } else if (data.reason == 'MAX') {
+        sendNotice('请求失败(当前账号限额 <b>' + data.max + '</b> 已满)');
+      } else if (data.reason == 'ERR_TOKEN' || data.reason == 'TIMEOOUT') {
+        logout();
+      } else {
+        sendNotice('非法操作');
+      }
+    });
+  }
+
   function setUserInfo() {
     $.post('/api/setUserInfo', {
       birthDate: $('#userBirthDate').val(),
@@ -380,10 +403,10 @@
         tabViolet.webs = data.webData;
         $('#userName').html('Hi, ' + tabHome.user.name);
         document.getElementsByName('optionsRadios')[tabHome.user.sex].checked = true;
-        if (tabHome.user.class == 1) {
-          getWebInfo();
-        } else {
+        if (tabHome.user.class == 0) {
           $('#devButton').hide();
+        } else {
+          getWebInfo();
         }
       } else {
         logout();

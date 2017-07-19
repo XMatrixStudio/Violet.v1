@@ -42,5 +42,5 @@ app.post('/noAuth', verify.checkToken, User.noAuth); //取消授权
 app.post('/setUserInfo', verify.checkToken, User.mSetUserInfo); //修改用户信息
 app.post('/getWebInfo', verify.checkToken, Site.getWebInfo); //获取网站信息
 app.post('/setWebInfo', verify.checkToken, Site.setWebInfo); //设置网站信息
-app.post('/addWeb', verify.checkToken, Site.addSite); //增加网站
+app.post('/addSite', verify.checkToken, Site.addSite); //增加网站
 app.post('/changeKey', verify.checkToken, Site.changeKey); //更改密钥

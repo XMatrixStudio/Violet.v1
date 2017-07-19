@@ -27,7 +27,7 @@ var userDB = db.violet.model('users', userSchema);
 exports.register = (req, res, next) => {
   if (!regExp(/^[a-zA-Z0-9]{3,20}$/, req.body.name, 'ILLEGAL_NAME', res, next)) return;
   if (!regExp(/^(\w)+(\.\w+)*@(\w)+((\.\w{2,9}))$/, req.body.email, 'ILLEGAL_EMAIL', res, next)) return;
-  userDB.count({ name: req.body.name }, (err, val) => {
+  userDB.count({ name: { "$regex": "^" + req.body.name + "$", "$options": "i" } }, (err, val) => {
     if (err) {
       sendErr(err, res, next);
     } else if (val) {
@@ -39,7 +39,7 @@ exports.register = (req, res, next) => {
 };
 
 var register_email = (req, res, next) => {
-  userDB.count({ email: req.body.email }, (err, val) => {
+  userDB.count({ email: { "$regex": "^" + req.body.email + "$", "$options": "i" } }, (err, val) => {
     if (err) {
       sendErr(err, res, next);
     } else if (val) {
@@ -77,7 +77,7 @@ var register_write = (req, res, next) => {
 
 exports.login = (req, res, next) => {
   if (req.body.user.indexOf('@') == -1) { // 用户名登陆
-    userDB.findOne({ name: req.body.user }, (err, val) => {
+    userDB.findOne({ name: { "$regex": "^" + req.body.user + "$", "$options": "i" } }, (err, val) => {
       if (val === null) {
         sendErr('NO_USERNAME', res, next);
       } else {
@@ -85,7 +85,7 @@ exports.login = (req, res, next) => {
       }
     });
   } else { // 邮箱登陆
-    userDB.findOne({ email: req.body.user }, (err, val) => {
+    userDB.findOne({ email: { "$regex": "^" + req.body.user + "$", "$options": "i" } }, (err, val) => {
       if (val === null) {
         sendErr('NO_EMAIL', res, next);
       } else {
