@@ -181,7 +181,7 @@ exports.makeToken = () => { // 生成网站令牌
 };
 
 exports.getUserInfo = (token, callback) => { //获取用户信息
-  exports.post('/api/getInfo', { userToken: token, webToken: exports.makeToken() }, (data) => {
+  exports.post('/api/getInfo', { sid: config.webId, userToken: token, webToken: exports.makeToken() }, (data) => {
     if (data.state == 'failed') console.log('ERR: ' + data.reason);
     callback(data);
   });

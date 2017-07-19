@@ -1,8 +1,15 @@
 var mongoose = require('mongoose');
+const fs = require('fs'); //文件处理
+const config = JSON.parse(fs.readFileSync('./config/mongodb.json'));
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://violet:xmatrix-me@119.29.103.176:27017/violet', {
-  useMongoClient: true
-});
+let mongodbStr =
+  'mongodb://' +
+  config.user + ':' +
+  config.password + '@' +
+  config.host + ':' +
+  config.port + '/' +
+  config.dbName;
+mongoose.connect(mongodbStr, { useMongoClient: true });
 var db = mongoose.connection;
 db.on('error', () => {
   console.error.bind(console, 'connection error:');

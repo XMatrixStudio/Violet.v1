@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content="#f8f8f8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test</title>
+</head>
+
+<body>
+  <a href="https://oauth.xmatrix.studio/?sid=10001">登陆</a>
+  <p id="text"></p>
+</body>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+  function getCookie(name) { //获取cookie
+    var arr, reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
+    return (arr = document.cookie.match(reg)) ? unescape(arr[2]) : null;
+  }
+  $(() => {
+    $('#text').html('Hi,' + getCookie('name'));
+  });
+</script>
+
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content="#f8f8f8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>登陆中</title>
+</head>
+
+<body>
+  <p>请稍后...</p>
+
+</body>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+  function getQueryString(name) { //获取get参数
+    var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+    var r = window.location.search.substr(1).match(reg);
+    return r != null ? unescape(r[2]) : null;
+  }
+  $(() => {
+    $.post('/api/login', {
+      code: getQueryString('code'),
+    }, (data) => {
+      if (data.state == 'ok') {
+        document.cookie = 'data=' + data;
+        document.cookie = 'name=' + data.name;
+        document.cookie = 'email=' + data.email;
+        if (getQueryString('args') !== undefined && getQueryString('args') !== 'null' && getQueryString('args') !== null) {
+          window.location.href = getQueryString('args');
+        } else {
+          window.location.href = 'index.html';
+        }
+
+      }
+    })
+  });
+</script>
+
+</html>

@@ -4,3 +4,4 @@ service/config
 .jshintrc
 package-lock.json
 local/
+example/config
