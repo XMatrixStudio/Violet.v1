@@ -59,18 +59,22 @@ exports.post = (path, data, callback) => {
   req.end();
 };
 
-exports.encrypt = (json) => {
-  var cipher = crypto.createCipher('aes192', config.key);
+exports.encrypt = (json, key) => {
+  let myKey = key;
+  if (myKey === undefined) myKey = config.key;
+  var cipher = crypto.createCipher('aes192', myKey);
   var enc = cipher.update(JSON.stringify(json), 'utf8', 'hex');
   enc += cipher.final('hex');
   enc += 'o' + exports.makeAMD5(enc).slice(20);
   return enc;
 }; // 加密数据
 
-exports.decrypt = (str) => {
+exports.decrypt = (str, key) => {
+  let myKey = key;
+  if (myKey === undefined) myKey = config.key;
   var data = str.split('o');
-  if (exports.makeAMD5(data[0]).slice(20) == data[1]) {
-    var decipher = crypto.createDecipher('aes192', config.key);
+  if (exports.makeAMD5(data[0], myKey).slice(20) == data[1]) {
+    var decipher = crypto.createDecipher('aes192', myKey);
     var dec = decipher.update(data[0], 'hex', 'utf8');
     dec += decipher.final('utf8');
     var reg = new RegExp('"', "g");
@@ -81,15 +85,19 @@ exports.decrypt = (str) => {
   } //解密数据
 };
 
-exports.makeASha = function(str) {
+exports.makeASha = function(str, sign) {
+  let mySign = sign;
+  if (sign === undefined) mySign = config.key;
   var hashSHA = crypto.createHash('sha512');
-  hashSHA.update(str + config.sign);
+  hashSHA.update(str + mySign);
   return hashSHA.digest('hex');
 }; // 散列
 
-exports.makeAMD5 = function(str) {
+exports.makeAMD5 = function(str, sign) {
+  let mySign = sign;
+  if (sign === undefined) mySign = config.key;
   var hashSHA = crypto.createHash('md5');
-  hashSHA.update(str + config.sign);
+  hashSHA.update(str + mySign);
   return hashSHA.digest('hex');
 }; // 散列
 
@@ -152,7 +160,6 @@ exports.makeUserToken = (req, res, userData, callback) => { //设置cookies信�
   res.cookie('isLogin', true, { expires: new Date(Date.now() + 8640000000), httpOnly: false });
   if (req.cookies.remember == 'true') {
     res.cookie('token', exports.encrypt(userData), { expires: new Date(Date.now() + 8640000000), httpOnly: true });
-    // 10天后过期
   } else {
     res.cookie('token', exports.encrypt(userData), { expires: 0, httpOnly: true });
   }
@@ -173,7 +180,7 @@ exports.makeToken = () => { // 生成网站令牌
   return token;
 };
 
-exports.getUserInfo = (token, callback) => {
+exports.getUserInfo = (token, callback) => { //获取用户信息
   exports.post('/api/getInfo', { userToken: token, webToken: exports.makeToken() }, (data) => {
     if (data.state == 'failed') console.log('ERR: ' + data.reason);
     callback(data);

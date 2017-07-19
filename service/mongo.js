@@ -31,19 +31,3 @@ find(con, (name), callback)
 find 正则 {'username':{$regex://i}}
 */
 // -------------------
-
-/* var siteSchema = mongoose.Schema({
-  name: String,
-  url: String,
-  date: Date
-}, { collection: 'sites' }); // 创建数据表骨架
-
-var siteModel = mongoose.model('sites', siteSchema); // 绑定数据表
-siteModel.findOne({ name: 'xmoj' }, (err, doc) => {
-  console.log(doc);
-}); */
-
-//exports.insertDate(siteModel, { name: 'xmoj', url: 'xmoj.zhenly.cn' }, (state) => { console.log(state) });
-//console.log(people);
-// insertDate(siteModel, { name: 'xmoj', url: 'xmoj.zhenly.cn' }, (state) => {console.log(state)});
-// update(siteModel, { 'name': 'xmoj' }, { 'name': 'XMatrixOJ' }, (state) => {console.log(state)});

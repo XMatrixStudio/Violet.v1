@@ -6,6 +6,7 @@ var siteSchema = db.violet.Schema({
   url: String,
   loginTimes: Number,
   uid: Number,
+  key: String,
 }, { collection: 'sites' });
 var siteDB = db.violet.model('sites', siteSchema);
 exports.db = siteDB;
@@ -80,10 +81,30 @@ exports.setWebInfo = (req, res, next) => {
       val.save((err) => {});
       res.send({ state: 'ok' });
     } else {
-      res.send({
-        state: 'failed',
-        reason: 'NO_AUTH',
-      });
+      res.send({ state: 'failed', reason: 'NO_AUTH' });
     }
   });
+};
+
+exports.changeKey = (req, res, next) => {
+  siteDB.findOne({ sid: req.body.sid }, (err, val) => {
+    if (val === null) {
+      res.send({ state: 'failed', reason: 'NO_SITE' });
+    } else if (val.uid == verify.getUserId(res)) {
+      let myKey = randomString(20);
+      val.key = myKey;
+      val.save((err) => {});
+      res.send({ state: 'ok', key: myKey });
+    } else {
+      res.send({ state: 'failed', reason: 'NO_AUTH' });
+    }
+  });
+};
+
+let randomString = (len) => {
+  let $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
+  let maxPos = $chars.length;
+  let str = '';　　
+  for (i = 0; i < len; i++) { str += $chars.charAt(Math.floor(Math.random() * maxPos)); }　　
+  return str;
 };

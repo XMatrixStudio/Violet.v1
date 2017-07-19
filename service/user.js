@@ -233,34 +233,36 @@ var createCode = (uid) => {
 
 // ------------------------------------------------
 exports.getInfo = (req, res, next) => {
-  var userData = verify.decrypt(req.body.userToken).split('&');
-  var webData = verify.decrypt(req.body.webToken).split('&');
-  console.log(verify.decrypt(req.body.userToken));
-  console.log(userData[0]);
-  console.log(userData[1]);
-  console.log((verify.getNowTime() - userData[1]));
-  if (userData[0] === undefined || userData[1] === undefined || (verify.getNowTime() - userData[1]) > 60) {
-    sendErr('USER_ERR', res, next);
-  } else if (webData[0] === undefined || webData[1] === undefined || (verify.getNowTime() - webData[1]) > 60) {
-    sendErr('WEB_ERR', res, next);
-  } else {
-    userDB.findOne({ uid: userData[0] }, (err, val) => {
-      if (val === null) {
+  site.findSiteById(req.body.sid, (val) => {
+    if (val === null) {
+      sendErr('NO_SITE', res, next);
+    } else {
+      var userData = verify.decrypt(req.body.userToken).split('&');
+      var webData = verify.decrypt(req.body.webToken, val.key).split('&');
+      if (userData[0] === undefined || userData[1] === undefined || (verify.getNowTime() - userData[1]) > 60) {
         sendErr('USER_ERR', res, next);
+      } else if (webData[0] === undefined || webData[1] === undefined || (verify.getNowTime() - webData[1]) > 60) {
+        sendErr('WEB_ERR', res, next);
       } else {
-        res.send({
-          state: 'ok',
-          uid: val.uid,
-          name: val.name,
-          email: val.email,
-          phone: val.phone,
-          detail: val.detail,
-          sex: val.sex,
-          birthTime: val.birthTime,
+        userDB.findOne({ uid: userData[0] }, (err, val) => {
+          if (val === null) {
+            sendErr('USER_ERR', res, next);
+          } else {
+            res.send({
+              state: 'ok',
+              uid: val.uid,
+              name: val.name,
+              email: val.email,
+              phone: val.phone,
+              detail: val.detail,
+              sex: val.sex,
+              birthTime: val.birthTime,
+            });
+          }
         });
       }
-    });
-  }
+    }
+  });
 };
 
 // ------------------------------------------------

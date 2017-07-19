@@ -1,4 +1,5 @@
 service/node_modules
+service/config
 .vs/
 .jshintrc
 package-lock.json
