@@ -46,7 +46,7 @@ exports.post = (path, data, callback) => {
     }
     res.on('data', (d) => {
       if (d.toString('ascii').indexOf('"state":"ok"') != -1) {
-        return callback({ state: 'ok', data: JSON.parse(d.toString('ascii')) });
+        return callback({ state: 'ok', userData: JSON.parse(d.toString('ascii')) });
       } else {
         return callback({ state: 'failed', reason: d.toString('ascii') });
       }
@@ -187,7 +187,7 @@ exports.getUserInfo = (token, callback) => { //获取用户信息
   });
 };
 
-let DBToken = (res, uid, oldToken, newToken, callback) => {
+exports.DBToken = (res, uid, oldToken, newToken, callback) => {
   userDB.findOne({ uid: uid }, (err, val) => {
     if (val === null) {
       callback('NO_USER');
@@ -199,5 +199,18 @@ let DBToken = (res, uid, oldToken, newToken, callback) => {
       val.save((err) => {});
       callback('OK');
     }
+  });
+};
+
+
+exports.makeNewToken = (req, res, uid, callback) => {
+  let token = Math.round(Math.random() * 1000000);
+  userDB.findOne({ uid: uid }, (err, val) => {
+    val.token = token;
+    val.save((err) => {});
+    let userData = uid + '&' + exports.getNowTime() + '&' + token;
+    exports.makeUserToken(req, res, userData, () => {
+      callback();
+    });
   });
 };

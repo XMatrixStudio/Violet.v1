@@ -10,8 +10,7 @@
 </head>
 
 <body>
-  <p>请稍后...</p>
-
+  <p>登陆中，请稍后...</p>
 </body>
 <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 <script type="text/javascript">
@@ -25,7 +24,6 @@
       code: getQueryString('code'),
     }, (data) => {
       if (data.state == 'ok') {
-        document.cookie = 'data=' + data;
         document.cookie = 'name=' + data.name;
         document.cookie = 'email=' + data.email;
         if (getQueryString('args') !== undefined && getQueryString('args') !== 'null' && getQueryString('args') !== null) {
@@ -33,7 +31,6 @@
         } else {
           window.location.href = 'index.html';
         }
-
       }
     })
   });

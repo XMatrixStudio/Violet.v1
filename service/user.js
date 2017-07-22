@@ -112,7 +112,7 @@ var sendSiteInfo = (req, res, next, userVal) => {
       } else {
         theSiteName = val.name;
       }
-      makeNewToken(req, res, userVal.uid, () => {
+      exports.makeNewToken(req, res, userVal.uid, () => {
         res.send({
           state: 'ok',
           siteName: theSiteName,
@@ -122,7 +122,7 @@ var sendSiteInfo = (req, res, next, userVal) => {
         });
       });
     } else {
-      makeNewToken(req, res, userVal.uid, () => {
+      exports.makeNewToken(req, res, userVal.uid, () => {
         res.send({
           state: 'failed',
           reason: 'VALID_EMAIL',
@@ -317,18 +317,6 @@ var sendErr = (str, res, next) => {
   next('route');
 };
 
-
-var makeNewToken = (req, res, uid, callback) => {
-  let token = Math.round(Math.random() * 1000000);
-  userDB.findOne({ uid: uid }, (err, val) => {
-    val.token = token;
-    val.save((err) => {});
-    let userData = uid + '&' + verify.getNowTime() + '&' + token;
-    verify.makeUserToken(req, res, userData, () => {
-      callback();
-    });
-  });
-};
 
 // -------------------------------------------------------------
 
