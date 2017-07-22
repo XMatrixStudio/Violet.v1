@@ -21,7 +21,7 @@ var userSchema = db.violet.Schema({
   class: Number,
 }, { collection: 'users' });
 var userDB = db.violet.model('users', userSchema);
-
+exports.db = userDB;
 
 // ------------------------------------------------
 exports.register = (req, res, next) => {
@@ -318,21 +318,6 @@ var sendErr = (str, res, next) => {
 };
 
 
-exports.DBToken = (res, uid, oldToken, newToken, callback) => {
-  userDB.findOne({ uid: uid }, (err, val) => {
-    if (val === null) {
-      callback('NO_USER');
-    } else if (val.token != oldToken) {
-      callback('ERR_TOKEN');
-    } else {
-      res.locals.userData = val;
-      val.token = newToken;
-      val.save((err) => {});
-      callback('OK');
-    }
-  });
-};
-
 var makeNewToken = (req, res, uid, callback) => {
   let token = Math.round(Math.random() * 1000000);
   userDB.findOne({ uid: uid }, (err, val) => {
@@ -361,7 +346,6 @@ exports.mGetUserInfo = (req, res, next) => {
           phone: val.phone,
           sex: val.sex,
           sites: val.sites,
-          class: val.class,
         },
         webData: webData,
       });

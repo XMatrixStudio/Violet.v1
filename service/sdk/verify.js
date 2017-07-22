@@ -25,7 +25,7 @@ const https = require('https'); // https模块
 const queryString = require("querystring"); // 转化为格式化对象
 const crypto = require('crypto');
 const cookieParser = require('cookie-parser'); // cookie模块
-const userMod = require('../user.js');
+const userDB = require('../user.js').db;
 
 
 exports.post = (path, data, callback) => {
@@ -141,7 +141,7 @@ exports.checkToken = (req, res, next) => { // 检测token
     next('route');
   } else {
     let token = Math.round(Math.random() * 1000000);
-    userMod.DBToken(res, data[0], data[2], token, (str) => {
+    exports.DBToken(res, data[0], data[2], token, (str) => {
       if (str == 'OK') {
         let userData = data[0] + '&' + exports.getNowTime() + '&' + token;
         exports.makeUserToken(req, res, userData, () => {
@@ -184,5 +184,20 @@ exports.getUserInfo = (token, callback) => { //获取用户信息
   exports.post('/api/getInfo', { sid: config.webId, userToken: token, webToken: exports.makeToken() }, (data) => {
     if (data.state == 'failed') console.log('ERR: ' + data.reason);
     callback(data);
+  });
+};
+
+let DBToken = (res, uid, oldToken, newToken, callback) => {
+  userDB.findOne({ uid: uid }, (err, val) => {
+    if (val === null) {
+      callback('NO_USER');
+    } else if (val.token != oldToken) {
+      callback('ERR_TOKEN');
+    } else {
+      res.locals.userData = val;
+      val.token = newToken;
+      val.save((err) => {});
+      callback('OK');
+    }
   });
 };
