@@ -192,7 +192,7 @@
     if (getCookie('remember') == 'true') {
       document.getElementById('checkRemember').checked = true
     }
-    if (getCookie('isLogin') === 'true') {
+    if (getCookie('isLogin') === 'true' && getCookie('remember') == 'true') {
       $.post('/api/getUser', {
         sid: getQueryString('sid') === null ? 10000 : getQueryString('sid')
       }, (data) => {
