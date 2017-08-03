@@ -255,6 +255,7 @@ exports.getInfo = (req, res, next) => {
               email: val.email,
               phone: val.phone,
               detail: val.detail,
+              web: val.web,
               sex: val.sex,
               birthTime: val.birthTime,
             });
