@@ -112,7 +112,7 @@ var sendSiteInfo = (req, res, next, userVal) => {
       } else {
         theSiteName = val.name;
       }
-      exports.makeNewToken(req, res, userVal.uid, () => {
+      verify.makeNewToken(req, res, userVal.uid, () => {
         res.send({
           state: 'ok',
           siteName: theSiteName,
@@ -122,7 +122,7 @@ var sendSiteInfo = (req, res, next, userVal) => {
         });
       });
     } else {
-      exports.makeNewToken(req, res, userVal.uid, () => {
+      verify.makeNewToken(req, res, userVal.uid, () => {
         res.send({
           state: 'failed',
           reason: 'VALID_EMAIL',
