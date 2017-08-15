@@ -166,6 +166,15 @@ exports.makeUserToken = (req, res, userData, callback) => { //设置cookies信�
   if (callback !== undefined) callback();
 };
 
+exports.getLoginState = (req) => {
+  return req.cookies.token !== undefined;
+};
+
+exports.setCookies = (res, name, data, time, callback) => {
+  res.cookie(name, data, { expires: new Date(Date.now() + time * 1000), httpOnly: false });
+  if (callback !== undefined) callback();
+};
+
 
 exports.logout = (req, res, next) => { // 退出登陆
   res.cookie('isLogin', false, { expires: new Date(Date.now() + 8640000000), httpOnly: false });

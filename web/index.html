@@ -47,14 +47,14 @@
                 <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-user-o"></i></span>
                   <input type="text" id="user" class="form-control" placeholder="电子邮箱 / 用户名" aria-describedby="inputGroupSuccess1Status">
-                  <a class="input-group-addon" href="#joinInDiv" aria-controls="joinInDiv" role="tab" data-toggle="tab" title="注册"><span><i class="fa fa-plus"></i></span></a>
+                  <a tabindex="-1" class="input-group-addon" href="#joinInDiv" aria-controls="joinInDiv" role="tab" data-toggle="tab" title="注册"><span><i class="fa fa-plus"></i></span></a>
                 </div>
               </div>
               <div class="form-group" style="margin-top: 30px;">
                 <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-key"></i></span>
                   <input type="password" id="userPassword" class="form-control" placeholder="密码">
-                  <a class="input-group-addon" href="#reSetDiv" aria-controls="reSetDiv" role="tab" data-toggle="tab" title="找回密码"><span><i class="fa fa-question"></i></span></a>
+                  <a tabindex="-1" class="input-group-addon" href="#reSetDiv" aria-controls="reSetDiv" role="tab" data-toggle="tab" title="找回密码"><span><i class="fa fa-question"></i></span></a>
                 </div>
               </div>
             </div>
@@ -187,7 +187,16 @@
 <script>
   var countdown = 120;
   var countdownE = 120;
-
+  $('#user').bind('keypress', function(event) {
+    if (event.keyCode == "13") {
+      $('#userPassword').focus();
+    }
+  });
+  $('#userPassword').bind('keypress', function(event) {
+    if (event.keyCode == "13") {
+      login();
+    }
+  });
   $(() => {
     if (getCookie('remember') == 'true') {
       document.getElementById('checkRemember').checked = true
@@ -208,7 +217,7 @@
               showEmailDiv(data.email, data.name);
               break;
             case 'ERR_TOKEN':
-              sendNotice('非法访问，请重新登陆');
+              sendNotice('登陆已失效，请重新登陆');
               logout();
               break;
             case 'TIMEOUT':
@@ -270,7 +279,7 @@
       if (data.state == 'failed') {
         switch (data.reason) {
           case 'ERR_TOKEN':
-            sendNotice('非法访问，请重新登陆');
+            sendNotice('登陆已失效，请重新登陆');
             logout();
             break;
           case 'TIMEOUT':
