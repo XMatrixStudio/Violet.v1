@@ -208,12 +208,12 @@
                 <p style="font-size: 22px;margin-bottom: -5px;"><i class="fa fa-check fa-1x fa-fw"></i> 授权管理</p>
               </div>
               <div class="panel-body" style="padding-top: 5%;">
-                <div class="col-md-12" v-for="web in webs" style="padding-bottom: 20px;">
+                <div class="col-md-12" v-for="(web, index) in webs" style="padding-bottom: 20px;">
                   <div class="col-md-8" style="font-size: 20px;">
                     <i class="fa fa-globe fa-fw"></i> {{web.name}}
                   </div>
                   <div class="col-xs-offset-8" style="font-size: 20px;text-align: right;">
-                    <button class="btn btn-success" :value="web.sid" onclick="signInWeb(this)"><i class="fa fa-sign-in fa-fw"></i> 登陆</button>
+                    <button :id="'btnSignIn' + index" class="btn btn-success" :value="web.sid"><i class="fa fa-sign-in fa-fw"></i> 登陆</button>
                     <button class="btn btn-warning" :value="web.sid" :data="web.name" onclick="deleteWeb(this)" data-toggle="modal" data-target="#dialogDiv"><i class="fa fa-times fa-fw"></i> 取消授权</button>
                   </div>
                 </div>
@@ -269,28 +269,6 @@
     $('#dialogText').html('是否取消对网站 <b>' + e.getAttribute('data') + '</b> 的授权');
   }
 
-  function signInWeb(e) {
-    $.post('/api/auth', {
-      sid: e.getAttribute('value'),
-    }, (data) => {
-      if (data.state == 'failed') {
-        switch (data.reason) {
-          case 'ERR_TOKEN':
-            sendNotice('非法访问，请重新登陆');
-            logout();
-            break;
-          case 'TIMEOUT':
-            sendNotice('登陆已过期，请重新登陆');
-            logout();
-            break;
-          default:
-            sendNotice('未知错误: ' + data.reason);
-        }
-      } else {
-        window.open('https://' + data.url + '?code=' + data.code);
-      }
-    });
-  }
 
   function noAuth(e) {
     $.post('/api/noAuth', {
@@ -401,6 +379,32 @@
       if (data.state == 'ok') {
         tabHome.user = data.userData;
         tabViolet.webs = data.webData;
+        Vue.nextTick(function() {
+          for (var i in tabViolet.webs) {
+            document.getElementById('btnSignIn' + i).onclick = () => {
+              $.post('/api/auth', {
+                sid: tabViolet.webs[i].sid,
+              }, (data) => {
+                if (data.state == 'failed') {
+                  switch (data.reason) {
+                    case 'ERR_TOKEN':
+                      sendNotice('非法访问，请重新登陆');
+                      logout();
+                      break;
+                    case 'TIMEOUT':
+                      sendNotice('登陆已过期，请重新登陆');
+                      logout();
+                      break;
+                    default:
+                      sendNotice('未知错误: ' + data.reason);
+                  }
+                } else {
+                  window.open('https://' + data.url + '?code=' + data.code);
+                }
+              });
+            }
+          }
+        })
         $('#userName').html('Hi, ' + tabHome.user.name);
         document.getElementsByName('optionsRadios')[tabHome.user.sex].checked = true;
         if (tabHome.user.class == 0) {
