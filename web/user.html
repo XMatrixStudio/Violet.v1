@@ -381,7 +381,8 @@
         tabViolet.webs = data.webData;
         Vue.nextTick(function() {
           for (var i in tabViolet.webs) {
-            document.getElementById('btnSignIn' + i).onclick = () => {
+            $('#btnSignIn' + i).click(function() {
+              var w = window.open()
               $.post('/api/auth', {
                 sid: tabViolet.webs[i].sid,
               }, (data) => {
@@ -399,10 +400,11 @@
                       sendNotice('未知错误: ' + data.reason);
                   }
                 } else {
-                  window.open('https://' + data.url + '?code=' + data.code);
+                  w.location = 'https://' + data.url + '?code=' + data.code
+                    //window.open('https://' + data.url + '?code=' + data.code);
                 }
               });
-            }
+            })
           }
         })
         $('#userName').html('Hi, ' + tabHome.user.name);
