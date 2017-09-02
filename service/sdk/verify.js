@@ -2,30 +2,19 @@
 
 模块功能： Violet 客户端 SDK
 
-配置文件： violet.json - host
+配置文件： violet.json
 
-API:
------------
-post(path, data, callback(result)) 向认证服务器发送信息
-@param path : 请求服务类型 []
-@param data : 数据主体
-@param callback(result) : 返回请求结果
-@具体服务类型和返回数据结构请查看相关文档
-******
-example code :
-exports.post('/user/post', { data: 'hello, world' }, (data) => {
-  console.log(data);
-});
-----------
 */
-
+// 使用前准备
+const userDB = require('../user.js').db; //授权数据库
+// ------------------------
 const fs = require('fs'); //文件处理
-const config = JSON.parse(fs.readFileSync('./config/violet.json'));
+const config = JSON.parse(fs.readFileSync('./config/violet.json')); // 配置文件
 const https = require('https'); // https模块
 const queryString = require("querystring"); // 转化为格式化对象
 const crypto = require('crypto');
 const cookieParser = require('cookie-parser'); // cookie模块
-const userDB = require('../user.js').db;
+
 
 
 exports.post = (path, data, callback) => {

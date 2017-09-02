@@ -245,7 +245,7 @@ exports.getInfo = (req, res, next) => {
         sendErr('WEB_ERR', res, next);
       } else {
         userDB.findOne({ uid: userData[0] }, (err, val) => {
-          if (val === null) {
+          if (!val) {
             sendErr('USER_ERR', res, next);
           } else {
             res.send({
@@ -257,7 +257,7 @@ exports.getInfo = (req, res, next) => {
               detail: val.detail,
               web: val.web,
               sex: val.sex,
-              birthTime: val.birthTime,
+              birthDate: val.birthDate,
             });
           }
         });
