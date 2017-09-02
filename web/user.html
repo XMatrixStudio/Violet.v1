@@ -384,7 +384,7 @@
             $('#btnSignIn' + i).click(function() {
               var w = window.open()
               $.post('/api/auth', {
-                sid: tabViolet.webs[i].sid,
+                sid: this.getAttribute('value'),
               }, (data) => {
                 if (data.state == 'failed') {
                   switch (data.reason) {
