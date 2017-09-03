@@ -1,4 +1,6 @@
 const fs = require('fs');
+const COS = require('cos-nodejs-sdk-v5'); // cos模块
+const cos = new COS(JSON.parse(fs.readFileSync('./config/cos.json')));
 const db = require('./mongo.js');
 const site = require('./site.js');
 const verify = require('./sdk/verify.js');
@@ -22,7 +24,7 @@ var userSchema = db.violet.Schema({
 }, { collection: 'users' });
 var userDB = db.violet.model('users', userSchema);
 exports.db = userDB;
-
+//violet-1252808268.cos.ap-guangzhou.myqcloud.com
 // ------------------------------------------------
 exports.register = (req, res, next) => {
   if (!regExp(/^[a-zA-Z0-9]{3,20}$/, req.body.name, 'ILLEGAL_NAME', res, next)) return;
@@ -248,16 +250,19 @@ exports.getInfo = (req, res, next) => {
           if (!val) {
             sendErr('USER_ERR', res, next);
           } else {
-            res.send({
-              state: 'ok',
-              uid: val.uid,
-              name: val.name,
-              email: val.email,
-              phone: val.phone,
-              detail: val.detail,
-              web: val.web,
-              sex: val.sex,
-              birthDate: val.birthDate,
+            getUserAvatar(res, (src) => {
+              res.send({
+                state: 'ok',
+                uid: val.uid,
+                name: val.name,
+                email: val.email,
+                phone: val.phone,
+                detail: val.detail,
+                web: val.web,
+                sex: val.sex,
+                birthDate: val.birthDate,
+                avatar: src,
+              });
             });
           }
         });
@@ -324,19 +329,22 @@ var sendErr = (str, res, next) => {
 exports.mGetUserInfo = (req, res, next) => {
   userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
     site.findSiteByArray(val.sites, (webData) => {
-      res.send({
-        state: 'ok',
-        userData: {
-          name: val.name,
-          email: val.email,
-          web: val.web,
-          birthDate: val.birthDate,
-          detail: val.detail,
-          phone: val.phone,
-          sex: val.sex,
-          sites: val.sites,
-        },
-        webData: webData,
+      getUserAvatar(res, (src) => {
+        res.send({
+          state: 'ok',
+          userData: {
+            name: val.name,
+            email: val.email,
+            web: val.web,
+            birthDate: val.birthDate,
+            detail: val.detail,
+            phone: val.phone,
+            sex: val.sex,
+            sites: val.sites,
+            avatar: src,
+          },
+          webData: webData,
+        });
       });
     });
   });
@@ -353,3 +361,56 @@ exports.mSetUserInfo = (req, res, next) => {
     res.send({ state: 'ok' });
   });
 };
+
+
+exports.changeAvatar = function(req, res, next) {
+  uploadToCos(verify.getUserId(res) + '.png', req.file).then((data) => {
+    res.send({ state: 'ok', src: 'https://violet-1252808268.cos.ap-guangzhou.myqcloud.com/' + verify.getUserId(res) + '.png' });
+  }).catch((err) => {
+    res.send({ state: 'failed' });
+  });
+};
+
+exports.getAvatar = function(req, res, next) {
+  getUserAvatar(res, (src) => {
+    res.send({ state: 'ok', src: src });
+  });
+};
+
+function getUserAvatar(res, callback) {
+  cos.headObject({
+    Bucket: 'violet',
+    Region: 'ap-guangzhou',
+    Key: verify.getUserId(res) + '.png',
+  }, function(err, data) {
+    if (err) {
+      callback('http://violet-1252808268.cosgz.myqcloud.com/0.png');
+    } else {
+      callback('https://violet-1252808268.cos.ap-guangzhou.myqcloud.com/' + verify.getUserId(res) + '.png');
+    }
+  });
+}
+
+
+function uploadToCos(name, file) {
+  let params = {
+    Bucket: 'violet',
+    Region: 'ap-guangzhou',
+    Key: name,
+    ContentLength: file.size,
+    ContentDisposition: name,
+    ContentEncoding: file.encoding,
+    ContentType: file.mimetype,
+    Body: fs.createReadStream('./' + file.path),
+  };
+  let p = new Promise((resolve, reject) => {
+    cos.putObject(params, function(err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
+  return p;
+}

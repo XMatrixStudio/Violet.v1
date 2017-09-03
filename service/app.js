@@ -6,6 +6,8 @@ const verify = require('./sdk/verify.js');
 const User = require('./user.js');
 const Site = require('./site.js');
 const cookieParser = require('cookie-parser'); // cookie模块
+const multer = require('multer'); //上传模块
+const upload = multer({ dest: 'uploads/' }); // 定义上传文件夹
 app.use(cookieParser()); // cookie模块
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -44,3 +46,6 @@ app.post('/getWebInfo', verify.checkToken, Site.getWebInfo); //获取网站信�
 app.post('/setWebInfo', verify.checkToken, Site.setWebInfo); //设置网站信息
 app.post('/addSite', verify.checkToken, Site.addSite); //增加网站
 app.post('/changeKey', verify.checkToken, Site.changeKey); //更改密钥
+
+app.post('/upDateAvatar', verify.checkToken, upload.single('avatar'), User.changeAvatar); // 更改头像
+app.post('/getAvatar', User.getAvatar); // 获取头像src
