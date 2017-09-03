@@ -48,4 +48,4 @@ app.post('/addSite', verify.checkToken, Site.addSite); //增加网站
 app.post('/changeKey', verify.checkToken, Site.changeKey); //更改密钥
 
 app.post('/upDateAvatar', verify.checkToken, upload.single('avatar'), User.changeAvatar); // 更改头像
-app.post('/getAvatar', User.getAvatar); // 获取头像src
+// app.post('/getAvatar', User.getAvatar); // 获取头像src

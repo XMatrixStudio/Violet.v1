@@ -250,6 +250,9 @@ exports.getInfo = (req, res, next) => {
           if (!val) {
             sendErr('USER_ERR', res, next);
           } else {
+            res.locals.userData = {
+              uid: userData[0],
+            };
             getUserAvatar(res, (src) => {
               res.send({
                 state: 'ok',
@@ -367,11 +370,14 @@ exports.changeAvatar = function(req, res, next) {
   uploadToCos(verify.getUserId(res) + '.png', req.file).then((data) => {
     res.send({ state: 'ok', src: 'https://violet-1252808268.cos.ap-guangzhou.myqcloud.com/' + verify.getUserId(res) + '.png' });
   }).catch((err) => {
-    res.send({ state: 'failed' });
+    res.send({ state: 'failed', reason: err });
   });
 };
 
 exports.getAvatar = function(req, res, next) {
+  res.locals.userData = {
+    uid: req.body.uid,
+  };
   getUserAvatar(res, (src) => {
     res.send({ state: 'ok', src: src });
   });
