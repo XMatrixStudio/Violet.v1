@@ -24,7 +24,6 @@ var userSchema = db.violet.Schema({
 }, { collection: 'users' });
 var userDB = db.violet.model('users', userSchema);
 exports.db = userDB;
-//violet-1252808268.cos.ap-guangzhou.myqcloud.com
 // ------------------------------------------------
 exports.register = (req, res, next) => {
   if (!regExp(/^[a-zA-Z0-9]{3,20}$/, req.body.name, 'ILLEGAL_NAME', res, next)) return;
@@ -250,10 +249,7 @@ exports.getInfo = (req, res, next) => {
           if (!val) {
             sendErr('USER_ERR', res, next);
           } else {
-            res.locals.userData = {
-              uid: userData[0],
-            };
-            getUserAvatar(res, (src) => {
+            getUserAvatar(userData[0], (src) => {
               res.send({
                 state: 'ok',
                 uid: val.uid,
@@ -332,7 +328,7 @@ var sendErr = (str, res, next) => {
 exports.mGetUserInfo = (req, res, next) => {
   userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
     site.findSiteByArray(val.sites, (webData) => {
-      getUserAvatar(res, (src) => {
+      getUserAvatar(verify.getUserId(res), (src) => {
         res.send({
           state: 'ok',
           userData: {
@@ -374,20 +370,11 @@ exports.changeAvatar = function(req, res, next) {
   });
 };
 
-exports.getAvatar = function(req, res, next) {
-  res.locals.userData = {
-    uid: req.body.uid,
-  };
-  getUserAvatar(res, (src) => {
-    res.send({ state: 'ok', src: src });
-  });
-};
-
-function getUserAvatar(res, callback) {
+function getUserAvatar(uid, callback) {
   cos.headObject({
     Bucket: 'violet',
     Region: 'ap-guangzhou',
-    Key: verify.getUserId(res) + '.png',
+    Key: uid + '.png',
   }, function(err, data) {
     if (err) {
       callback('http://violet-1252808268.cosgz.myqcloud.com/0.png');

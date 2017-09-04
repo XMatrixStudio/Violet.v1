@@ -1,31 +1,22 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
-const db = require('./mongo.js');
-const verify = require('./sdk/verify.js');
-const User = require('./user.js');
-const Site = require('./site.js');
-const cookieParser = require('cookie-parser'); // cookie模块
+const db = require('./mongo');
+const verify = require('./sdk/verify');
+const User = require('./user');
+const Site = require('./site');
 const multer = require('multer'); //上传模块
-const upload = multer({ dest: 'uploads/' }); // 定义上传文件夹
+const upload = multer({ dest: './uploads/' }); // 定义上传文件夹
+const cookieParser = require('cookie-parser'); // cookie模块
+const bodyParser = require('body-parser'); // post模块
 app.use(cookieParser()); // cookie模块
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const server = app.listen(30020, '127.0.0.1', function() {
-  var host = server.address().address;
-  var port = server.address().port;
-  console.log('App listening at http://%s:%s', host, port);
-});
 //日志处理
 app.use((req, res, next) => {
   var nowTime = new Date();
-  console.log('Time:' + nowTime + '|| Form' + req.url + '||' + req.headers.referer);
+  console.log(nowTime + '||' + req.url + '||' + req.headers.referer);
   next();
-});
-
-app.get('/', (req, res) => {
-  res.send('User authorization system is running');
 });
 //登陆前API
 app.post('/register', User.register); // 注册
@@ -46,6 +37,10 @@ app.post('/getWebInfo', verify.checkToken, Site.getWebInfo); //获取网站信�
 app.post('/setWebInfo', verify.checkToken, Site.setWebInfo); //设置网站信息
 app.post('/addSite', verify.checkToken, Site.addSite); //增加网站
 app.post('/changeKey', verify.checkToken, Site.changeKey); //更改密钥
-
 app.post('/upDateAvatar', verify.checkToken, upload.single('avatar'), User.changeAvatar); // 更改头像
-// app.post('/getAvatar', User.getAvatar); // 获取头像src
+// 监听端口
+const server = app.listen(30020, '127.0.0.1', function() {
+  var host = server.address().address;
+  var port = server.address().port;
+  console.log('App listening at http://%s:%s', host, port);
+});

@@ -19,7 +19,6 @@ db.on('disconnected', () => {
 }); // 连接断开
 db.on('connected', function() {
   console.log('Mongoose connection Success');
-
 });
 // 插入数据
 exports.insertDate = (myModel, data, callback) => {

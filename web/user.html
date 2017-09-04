@@ -36,21 +36,6 @@
       </div>
     </div>
   </div>
-  <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>上传头像</h3>
-        </div>
-        <div class="modal-body">
-          好大的坑，好难填啊！秀秀求救啊！
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-success"><i class="fa fa-upload fa-fw"></i> 修改头像</button>
-        </div>
-      </div>
-    </div>
-  </div>
   <div class="wrapper">
     <div class="container" style="padding-top: 1%;">
       <div id="noticeDiv"></div>
@@ -63,7 +48,8 @@
       <div class="col-md-3">
         <div class="panel panel-default">
           <div class="panel-heading">
-            <p style="padding-top: 20px;text-align: center;"><img class="img-circle" src="pic/10000.png" height="120px" width="120px" data-toggle="modal" data-target=".bs-example-modal-lg"></p>
+            <p style="padding-top: 20px;text-align: center;">
+              <img class="img-circle" src="pic/10000.png" height="120px" width="120px" href="#tabAvatar" aria-controls="tabAvatar" role="tab" data-toggle="tab"></p>
             <p id="userName" style="font-size: 20px;text-align: center;"></p>
           </div>
           <div class="panel-body" style="padding-top: 10%;">
@@ -115,7 +101,7 @@
                 </div>
               </div>
               <div class="panel-footer" style="text-align: right;">
-                <button class="btn btn-success" onclick="upload()" data-toggle="modal" data-target=".bs-example-modal-lg"><i class="fa fa-upload fa-fw"></i> 上传头像</button>
+                <button class="btn btn-success" href="#tabAvatar" aria-controls="tabAvatar" role="tab" data-toggle="tab"><i class="fa fa-upload fa-fw"></i> 上传头像</button>
                 <button class="btn btn-success" onclick="setUserInfo()"><i class="fa fa-pencil fa-fw"></i> 修改信息</button>
               </div>
             </div>
@@ -199,6 +185,21 @@
               </div>
               <div class="panel-footer" style="text-align: right;">
                 <button type="submit" class="btn btn-warning btn-lg" onclick="reSetPwd()"><i class="fa fa-check fa-fw"></i> 确认</button>
+              </div>
+            </div>
+          </div>
+          <div role="tabpanel" class="tab-pane fade in" id="tabAvatar">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <p style="font-size: 22px;margin-bottom: -5px;"><i class="fa fa-key fa-1x fa-fw"></i> 上传头像</p>
+              </div>
+              <div class="panel-body" style="padding-top: 3%;">
+                <!--
+                  // xiuxiu todo
+                -->
+              </div>
+              <div class="panel-footer" style="text-align: right;">
+                <button type="button" class="btn btn-success"><i class="fa fa-upload fa-fw"></i> 修改头像</button>
               </div>
             </div>
           </div>
