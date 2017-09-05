@@ -10,6 +10,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/cropper/3.0.0/cropper.min.css" rel="stylesheet">
   <title>Violet</title>
   <style>
     body {
@@ -41,22 +42,29 @@
       <div id="noticeDiv"></div>
       <div class="col-md-12">
         <p style="font-size: 50px;color: #eee">
-          <svg t="1498148324009" class="icon" style="margin-bottom: -7px;" viewbox="0 0 1038 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7587" xmlns:xlink="http://www.w3.org/1999/xlink" width="50" height="50"><path d="M971.172807 331.503669c34.709814 586.419956-371.606299 636.62524-455.83842 692.496331-84.26712-55.87109-490.583232-106.076374-455.907417-692.496331C66.662723 209.830828 0.007001 180.751822 0.007001 180.751822L39.631647 57.884022C158.540582 136.076349 386.459792 133.038453 515.334387 0c128.805597 133.038453 356.724807 136.075349 475.667742 57.884022l39.658645 122.8678s-66.654722 29.079006-59.487967 150.751847z m-320.514045-33.34486L531.64783 632.051397a304.540591 304.540591 0 0 0-14.709497 65.187772H514.822405c-1.672943-17.952386-7.133756-40.238625-16.38244-66.859715L384.889846 298.158809h-90.000924l174.95002 465.088103h83.243155l184.198704-465.088103H650.657762z" fill="#eee" p-id="7588" class=""></path>
-                    </svg> Violet User Center
+          <svg t="1498148324009" class="icon" style="margin-bottom: -7px;" viewbox="0 0 1038 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+            p-id="7587" xmlns:xlink="http://www.w3.org/1999/xlink" width="50" height="50">
+            <path d="M971.172807 331.503669c34.709814 586.419956-371.606299 636.62524-455.83842 692.496331-84.26712-55.87109-490.583232-106.076374-455.907417-692.496331C66.662723 209.830828 0.007001 180.751822 0.007001 180.751822L39.631647 57.884022C158.540582 136.076349 386.459792 133.038453 515.334387 0c128.805597 133.038453 356.724807 136.075349 475.667742 57.884022l39.658645 122.8678s-66.654722 29.079006-59.487967 150.751847z m-320.514045-33.34486L531.64783 632.051397a304.540591 304.540591 0 0 0-14.709497 65.187772H514.822405c-1.672943-17.952386-7.133756-40.238625-16.38244-66.859715L384.889846 298.158809h-90.000924l174.95002 465.088103h83.243155l184.198704-465.088103H650.657762z"
+              fill="#eee" p-id="7588" class=""></path>
+          </svg> Violet User Center
         </p>
       </div>
       <div class="col-md-3">
         <div class="panel panel-default">
           <div class="panel-heading">
             <p style="padding-top: 20px;text-align: center;">
-              <img id="userAvatar" class="img-circle" src="pic/10000.png" height="120px" width="120px" href="#tabAvatar" aria-controls="tabAvatar" role="tab" data-toggle="tab"></p>
+              <img id="userAvatar" class="img-circle" src="pic/10000.png" height="120px" width="120px" href="#tabAvatar" aria-controls="tabAvatar"
+                role="tab" data-toggle="tab"></p>
             <p id="userName" style="font-size: 20px;text-align: center;"></p>
           </div>
           <div class="panel-body" style="padding-top: 10%;">
             <button onclick="cleanNotice()" class="btn btn-success btn-block" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab"><i class="fa fa-info fa-fw"></i> 个人资料</button>
-            <button onclick="cleanNotice()" class="btn btn-success btn-block" href="#tabPassword" aria-controls="tabPassword" role="tab" data-toggle="tab"><i class="fa fa-key fa-fw"></i> 修改密码</button>
-            <button onclick="cleanNotice()" class="btn btn-success btn-block" href="#tabViolet" aria-controls="tabViolet" role="tab" data-toggle="tab"><i class="fa fa-check fa-fw"></i> 授权管理</button>
-            <button onclick="cleanNotice()" id="devButton" class="btn btn-success btn-block" href="#tabVioletDev" aria-controls="tabVioletDev" role="tab" data-toggle="tab"><i class="fa fa-globe fa-fw"></i> 我的网站</button>
+            <button onclick="cleanNotice()" class="btn btn-success btn-block" href="#tabPassword" aria-controls="tabPassword" role="tab"
+              data-toggle="tab"><i class="fa fa-key fa-fw"></i> 修改密码</button>
+            <button onclick="cleanNotice()" class="btn btn-success btn-block" href="#tabViolet" aria-controls="tabViolet" role="tab"
+              data-toggle="tab"><i class="fa fa-check fa-fw"></i> 授权管理</button>
+            <button onclick="cleanNotice()" id="devButton" class="btn btn-success btn-block" href="#tabVioletDev" aria-controls="tabVioletDev"
+              role="tab" data-toggle="tab"><i class="fa fa-globe fa-fw"></i> 我的网站</button>
             <button onclick="logout()" class="btn btn-danger btn-block"><i class="fa fa-sign-out fa-fw"></i> 退出登陆</button>
           </div>
         </div>
@@ -101,7 +109,9 @@
                 </div>
               </div>
               <div class="panel-footer" style="text-align: right;">
-                <button class="btn btn-success" href="#tabAvatar" aria-controls="tabAvatar" role="tab" data-toggle="tab"><i class="fa fa-upload fa-fw"></i> 上传头像</button>
+                <input id="toTabAvatarInput" type="file" style="display:none;">
+                <button id="toTabAvatar" href="#tabAvatar" aria-controls="tabAvatar" role="tab" data-toggle="tab" style="display:none;"></button>
+                <button class="btn btn-success" onclick="uploadFile()"><i class="fa fa-upload fa-fw"></i> 上传头像</button>
                 <button class="btn btn-success" onclick="setUserInfo()"><i class="fa fa-pencil fa-fw"></i> 修改信息</button>
               </div>
             </div>
@@ -117,7 +127,8 @@
                     <i class="fa fa-circle-thin fa-fw"></i> {{web.name}}
                   </div>
                   <div class="col-xs-offset-7" style="font-size: 20px;text-align: right;">
-                    <button class="btn btn-success" :value="index" onclick="toWebData(this)" href="#tabWebDev" aria-controls="tabWebDev" role="tab" data-toggle="tab"><i class="fa fa-pencil fa-fw"></i> 详细信息</button>
+                    <button class="btn btn-success" :value="index" onclick="toWebData(this)" href="#tabWebDev" aria-controls="tabWebDev" role="tab"
+                      data-toggle="tab"><i class="fa fa-pencil fa-fw"></i> 详细信息</button>
                   </div>
                 </div>
               </div>
@@ -194,9 +205,9 @@
                 <p style="font-size: 22px;margin-bottom: -5px;"><i class="fa fa-key fa-1x fa-fw"></i> 上传头像</p>
               </div>
               <div class="panel-body" style="padding-top: 3%;">
-                <!--
-                  // xiuxiu todo
-                -->
+                <div>
+                  <img id="image" style="max-width:100%;" src="pic/10000.png">
+                </div>
               </div>
               <div class="panel-footer" style="text-align: right;">
                 <button type="button" class="btn btn-success"><i class="fa fa-upload fa-fw"></i> 修改头像</button>
@@ -241,6 +252,7 @@
 <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://cdn.bootcss.com/vue/2.3.3/vue.js"></script>
+<script src="https://cdn.bootcss.com/cropper/3.0.0/cropper.min.js"></script>
 <script src="js/violet.js"></script>
 <script>
   var tabViolet = new Vue({
@@ -263,6 +275,24 @@
       user: {}
     }
   });
+
+  let option = {
+    viewMode: 2,
+    dragMode: 'crop',
+    aspectRatio: 1 / 1,
+    crop: function (e) {
+      // Output the result data for cropping image.
+      /*console.log(e.x);
+      console.log(e.y);
+      console.log(e.width);
+      console.log(e.height);
+      console.log(e.rotate);
+      console.log(e.scaleX);
+      console.log(e.scaleY);*/
+    }
+  };
+  let URL = window.URL || window.webkitURL;
+
 
   function deleteWeb(e) {
     document.getElementById('sureBtn').value = e.getAttribute('value');
@@ -380,9 +410,9 @@
       if (data.state == 'ok') {
         tabHome.user = data.userData;
         tabViolet.webs = data.webData;
-        Vue.nextTick(function() {
+        Vue.nextTick(function () {
           for (var i in tabViolet.webs) {
-            $('#btnSignIn' + i).click(function() {
+            $('#btnSignIn' + i).click(function () {
               var w = window.open()
               $.post('/api/auth', {
                 sid: this.getAttribute('value'),
@@ -402,7 +432,7 @@
                   }
                 } else {
                   w.location = 'https://' + data.url + '?code=' + data.code
-                    //window.open('https://' + data.url + '?code=' + data.code);
+                  //window.open('https://' + data.url + '?code=' + data.code);
                 }
               });
             })
@@ -476,9 +506,25 @@
     });
   }
 
-  $(function() {
+  function uploadFile() {
+    document.getElementById('toTabAvatarInput').click();
+  }
+
+  $(function () {
     getUserInfo();
+    $('#image').cropper(option);
+    $('#toTabAvatarInput').change(() => {
+      let arr = document.getElementById('toTabAvatarInput').files;
+      if (arr.length == 0) {
+        return 0;
+      }
+      let file = arr[0];
+      let uploadedImageURL = URL.createObjectURL(file);
+      $('#image').cropper('destroy').attr('src', uploadedImageURL).cropper(option);
+      document.getElementById('toTabAvatar').click();
+    });
   });
+
 </script>
 
 </html>
