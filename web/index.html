@@ -138,7 +138,7 @@
           <div id="authDiv" class="panel panel-success tab-pane fade in" role="tabpanel">
             <div class="panel-heading" style="font-size: 17px;"><i class="fa fa-check fa-1x fa-fw"></i>授权确认</div>
             <div class="panel-body" style="text-align: center;padding-bottom: 30px;">
-              <p style="padding-top: 20px;"><img class="img-circle" src="pic/10000.png" height="100px" width="100px"></p>
+              <p style="padding-top: 20px;"><img id="userAvatar" class="img-circle" src="pic/10000.png" height="100px" width="100px"></p>
               <p style="font-size: 17px;">Hi, <b id="userNameA">null</b></p>
               <p style="font-size: 17px;">是否授权登陆到 <b id="siteNameA">null</b></p>
               <button class="btn btn-success btn-lg" onclick="auth()"><i class="fa fa-check fa-fw"></i>确认授权</button>
@@ -209,7 +209,7 @@
           if (data.siteName == 'VIOLET') {
             window.location.href = '/user.html'; // 进入用户中心
           } else {
-            showAuthDiv(data.siteName, data.name);
+            showAuthDiv(data);
           }
         } else {
           switch (data.reason) {
@@ -266,7 +266,7 @@
         if (data.siteName == 'VIOLET') {
           window.location.href = '/user.html'; // 进入用户中心
         } else {
-          showAuthDiv(data.siteName, data.name);
+          showAuthDiv(data);
         }
       }
     });
@@ -351,7 +351,7 @@
         if (data.siteName == 'VIOLET') {
           window.location.href = '/user.html'; // 进入用户中心
         } else {
-          showAuthDiv(data.siteName, data.name);
+          showAuthDiv(data);
         }
       } else {
         switch (data.reason) {
@@ -463,9 +463,10 @@
     });
   }
 
-  function showAuthDiv(siteName, userName) {
-    $('#siteNameA').html(siteName);
-    $('#userNameA').html(userName);
+  function showAuthDiv(data) {
+    $('#siteNameA').html(data.siteName);
+    $('#userNameA').html(data.name);
+    $('#userAvatar').attr('src', data.src);
     cleanNotice();
     $('#myTab a[href="#authDiv"]').tab('show');
   }

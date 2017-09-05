@@ -114,12 +114,14 @@ var sendSiteInfo = (req, res, next, userVal) => {
         theSiteName = val.name;
       }
       verify.makeNewToken(req, res, userVal.uid, () => {
-        res.send({
-          state: 'ok',
-          siteName: theSiteName,
-          email: userVal.email,
-          name: userVal.name,
-          // 头像
+        getUserAvatar(userVal.uid, (url) => {
+          res.send({
+            state: 'ok',
+            siteName: theSiteName,
+            email: userVal.email,
+            name: userVal.name,
+            src: url,
+          });
         });
       });
     } else {
@@ -377,7 +379,7 @@ function getUserAvatar(uid, callback) {
     Key: uid + '.png',
   }, function(err, data) {
     if (err) {
-      callback('http://violet-1252808268.cosgz.myqcloud.com/0.png');
+      callback('https://violet-1252808268.cosgz.myqcloud.com/0.png');
     } else {
       callback('https://violet-1252808268.cos.ap-guangzhou.myqcloud.com/' + verify.getUserId(res) + '.png');
     }

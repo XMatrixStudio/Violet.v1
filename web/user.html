@@ -49,7 +49,7 @@
         <div class="panel panel-default">
           <div class="panel-heading">
             <p style="padding-top: 20px;text-align: center;">
-              <img class="img-circle" src="pic/10000.png" height="120px" width="120px" href="#tabAvatar" aria-controls="tabAvatar" role="tab" data-toggle="tab"></p>
+              <img id="userAvatar" class="img-circle" src="pic/10000.png" height="120px" width="120px" href="#tabAvatar" aria-controls="tabAvatar" role="tab" data-toggle="tab"></p>
             <p id="userName" style="font-size: 20px;text-align: center;"></p>
           </div>
           <div class="panel-body" style="padding-top: 10%;">
@@ -408,6 +408,7 @@
             })
           }
         })
+        $('#userAvatar').attr('src', tabHome.user.avatar);
         $('#userName').html('Hi, ' + tabHome.user.name);
         document.getElementsByName('optionsRadios')[tabHome.user.sex].checked = true;
         if (tabHome.user.class == 0) {
