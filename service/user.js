@@ -345,6 +345,7 @@ exports.mGetUserInfo = (req, res, next) => {
             phone: val.phone,
             sex: val.sex,
             sites: val.sites,
+            class: val.class,
             avatar: src,
           },
           webData: webData,
@@ -356,11 +357,11 @@ exports.mGetUserInfo = (req, res, next) => {
 
 exports.mSetUserInfo = (req, res, next) => {
   userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
-    if (req.body.web) val.web = req.body.web;
-    if (req.body.birthDate) val.birthDate = req.body.birthDate;
-    if (req.body.detail) val.detail = req.body.detail;
-    if (req.body.phone) val.phone = req.body.phone;
-    if (req.body.sex) val.sex = req.body.sex;
+    if (req.body.web) val.web = req.body.web.replace(/\'/g, '').replace(/\"/g, '');
+    if (req.body.birthDate) val.birthDate = req.body.birthDate.replace(/\'/g, '').replace(/\"/g, '');
+    if (req.body.detail) val.detail = req.body.detail.replace(/\'/g, '').replace(/\"/g, '');
+    if (req.body.phone) val.phone = req.body.phone.replace(/\'/g, '').replace(/\"/g, '');
+    if (req.body.sex) val.sex = req.body.sex.replace(/\'/g, '').replace(/\"/g, '');
     val.save((err) => {});
     res.send({ state: 'ok' });
   });

@@ -299,7 +299,7 @@
 
   function noAuth(e) {
     $.post('/api/noAuth', {
-      sid: e.getAttribute('value'),
+      sid: e.getAttribute('value').replace(/\'/g, '').replace(/\"/g, ''),
     }, (data) => {
       getUserInfo();
     });
@@ -309,7 +309,7 @@
 
   function getCode() {
     $.post('/api/getCode', {
-      email: tabHome.user.email,
+      email: tabHome.user.email.replace(/\'/g, '').replace(/\"/g, ''),
     }, (data) => {
       if (data.state == 'ok') {
         setTime();
@@ -339,9 +339,9 @@
       return;
     }
     $.post('/api/reset', {
-      email: tabHome.user.email,
-      vCode: $('#vCode').val(),
-      password: $('#userPasswordF').val(),
+      email: tabHome.user.email.replace(/\'/g, '').replace(/\"/g, ''),
+      vCode: $('#vCode').val().replace(/\'/g, '').replace(/\"/g, ''),
+      password: $('#userPasswordF').val().replace(/\'/g, '').replace(/\"/g, ''),
     }, (data) => {
       if (data.state == 'ok') {
         $('#userEmail').val($('#userEmailF').val());
@@ -381,11 +381,11 @@
 
   function setUserInfo() {
     $.post('/api/setUserInfo', {
-      birthDate: $('#userBirthDate').val(),
-      phone: $('#userPhone').val(),
-      web: $('#userWeb').val(),
-      detail: $('#userDetail').val(),
-      sex: $("input[type='radio']:checked").val(),
+      birthDate: $('#userBirthDate').val().replace(/\'/g, '').replace(/\"/g, ''),
+      phone: $('#userPhone').val().replace(/\'/g, '').replace(/\"/g, ''),
+      web: $('#userWeb').val().replace(/\'/g, '').replace(/\"/g, ''),
+      detail: $('#userDetail').val().replace(/\'/g, '').replace(/\"/g, ''),
+      sex: $("input[type='radio']:checked").val().replace(/\'/g, '').replace(/\"/g, ''),
     }, (data) => {
       if (data.state == 'ok') {
         sendNotice('修改个人信息成功');
@@ -450,9 +450,9 @@
 
   function setWebInfo() {
     $.post('/api/setWebInfo', {
-      sid: $('#webID').html(),
-      url: $('#callBack').val(),
-      name: $('#theSiteName').val(),
+      sid: $('#webID').html().replace(/\'/g, '').replace(/\"/g, ''),
+      url: $('#callBack').val().replace(/\'/g, '').replace(/\"/g, ''),
+      name: $('#theSiteName').val().replace(/\'/g, '').replace(/\"/g, ''),
     }, (data) => {
       if (data.state == 'ok') {
         sendNotice('修改信息成功');
@@ -488,7 +488,7 @@
 
   function changeKey() {
     $.post('/api/changeKey', {
-      sid: $('#webID').html()
+      sid: $('#webID').html().replace(/\'/g, '').replace(/\"/g, '')
     }, (data) => {
       if (data.state == 'ok') {
         sendNotice('成功更改网站Key,请及时修改配置文件');

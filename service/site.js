@@ -79,8 +79,8 @@ exports.setWebInfo = (req, res, next) => {
         reason: 'NO_SITE',
       });
     } else if (verify.getUserId(res) == val.uid) {
-      val.url = req.body.url;
-      val.name = req.body.name;
+      val.url = req.body.url.replace(/\'/g, '').replace(/\"/g, '');
+      val.name = req.body.name.replace(/\'/g, '').replace(/\"/g, '');
       val.save((err) => {});
       res.send({ state: 'ok' });
     } else {
@@ -105,9 +105,9 @@ exports.changeKey = (req, res, next) => {
 };
 
 let randomString = (len) => {
-  let $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
+  let $chars = ' ';
   let maxPos = $chars.length;
-  let str = '';　　
+  let str = '';
   for (i = 0; i < len; i++) { str += $chars.charAt(Math.floor(Math.random() * maxPos)); }　　
   return str;
 };
