@@ -105,7 +105,7 @@ exports.changeKey = (req, res, next) => {
 };
 
 let randomString = (len) => {
-  let $chars = ' ';
+  let $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
   let maxPos = $chars.length;
   let str = '';
   for (i = 0; i < len; i++) { str += $chars.charAt(Math.floor(Math.random() * maxPos)); }　　
