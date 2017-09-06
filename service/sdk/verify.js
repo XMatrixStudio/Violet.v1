@@ -4,29 +4,52 @@
 
 配置文件： violet.json - host
 
-API:
------------
-post(path, data, callback(result)) 向认证服务器发送信息
-@param path : 请求服务类型 []
-@param data : 数据主体
-@param callback(result) : 返回请求结果
-@具体服务类型和返回数据结构请查看相关文档
-******
-example code :
-exports.post('/user/post', { data: 'hello, world' }, (data) => {
-  console.log(data);
-});
-----------
 */
-
+// 使用前准备
+const userDB = require('../user.js').db; //授权数据库
+//
 const fs = require('fs'); //文件处理
-const config = JSON.parse(fs.readFileSync('./config/violet.json'));
+const config = JSON.parse(fs.readFileSync('./config/violet.json')); // 配置文件
 const https = require('https'); // https模块
 const queryString = require("querystring"); // 转化为格式化对象
 const crypto = require('crypto');
 const cookieParser = require('cookie-parser'); // cookie模块
-const userDB = require('../user.js').db;
-exports.post = (path, data, callback) => {
+
+//内部方法函数
+
+function makeUserToken(req, res, userData, callback) { //设置cookies信息
+  res.cookie('remember', req.cookies.remember, { expires: new Date(Date.now() + 8640000000), httpOnly: false });
+  res.cookie('isLogin', true, { expires: new Date(Date.now() + 8640000000), httpOnly: false });
+  if (req.cookies.remember == 'true') {
+    res.cookie('token', exports.encrypt(userData), { expires: new Date(Date.now() + 8640000000), httpOnly: true });
+  } else {
+    res.cookie('token', exports.encrypt(userData), { expires: 0, httpOnly: true });
+  }
+  if (callback !== undefined) callback();
+}
+
+function makeToken() { // 生成网站令牌
+  var token = config.webId + '&' + exports.getNowTime();
+  token = exports.encrypt(token);
+  return token;
+}
+
+function DBToken(res, uid, oldToken, newToken, callback) { // 更新数据库token
+  userDB.findOne({ uid: uid }, (err, val) => {
+    if (val === null) {
+      callback('NO_USER');
+    } else if (val.token != oldToken) {
+      callback('ERR_TOKEN');
+    } else {
+      res.locals.userData = val;
+      val.token = newToken;
+      val.save((err) => {});
+      callback('OK');
+    }
+  });
+}
+
+function postToViolet(path, data, callback) { // 与 violet 服务器通讯
   let postData = queryString.stringify(data);
   let options = {
     hostname: config.host,
@@ -55,9 +78,11 @@ exports.post = (path, data, callback) => {
     return callback({ state: 'failed', reason: e });
   });
   req.end();
-};
+}
 
-exports.encrypt = (json, key) => {
+// 以下为SDK提供的接口
+
+exports.encrypt = (json, key) => { // 使用key加密数据
   let myKey = key;
   if (myKey === undefined) myKey = config.key;
   var cipher = crypto.createCipher('aes192', myKey);
@@ -67,7 +92,7 @@ exports.encrypt = (json, key) => {
   return enc;
 }; // 加密数据
 
-exports.decrypt = (str, key) => {
+exports.decrypt = (str, key) => { // 使用key解密数据
   let myKey = key;
   if (myKey === undefined) myKey = config.key;
   var data = str.split('o');
@@ -83,7 +108,7 @@ exports.decrypt = (str, key) => {
   } //解密数据
 };
 
-exports.makeASha = function(str, sign) {
+exports.makeASha = function(str, sign) { // 使用key散列数据 - SHA512
   let mySign = sign;
   if (sign === undefined) mySign = config.key;
   var hashSHA = crypto.createHash('sha512');
@@ -91,7 +116,7 @@ exports.makeASha = function(str, sign) {
   return hashSHA.digest('hex');
 }; // 散列
 
-exports.makeAMD5 = function(str, sign) {
+exports.makeAMD5 = function(str, sign) { // 使用key散列数据 - MD5
   let mySign = sign;
   if (sign === undefined) mySign = config.key;
   var hashSHA = crypto.createHash('md5');
@@ -139,10 +164,10 @@ exports.checkToken = (req, res, next) => { // 检测token
     next('route');
   } else {
     let token = Math.round(Math.random() * 1000000);
-    exports.DBToken(res, data[0], data[2], token, (str) => {
+    DBToken(res, data[0], data[2], token, (str) => {
       if (str == 'OK') {
         let userData = data[0] + '&' + exports.getNowTime() + '&' + token;
-        exports.makeUserToken(req, res, userData, () => {
+        makeUserToken(req, res, userData, () => {
           next();
         });
       } else {
@@ -153,26 +178,14 @@ exports.checkToken = (req, res, next) => { // 检测token
   }
 };
 
-exports.makeUserToken = (req, res, userData, callback) => { //设置cookies信息
-  res.cookie('remember', req.cookies.remember, { expires: new Date(Date.now() + 8640000000), httpOnly: false });
-  res.cookie('isLogin', true, { expires: new Date(Date.now() + 8640000000), httpOnly: false });
-  if (req.cookies.remember == 'true') {
-    res.cookie('token', exports.encrypt(userData), { expires: new Date(Date.now() + 8640000000), httpOnly: true });
-  } else {
-    res.cookie('token', exports.encrypt(userData), { expires: 0, httpOnly: true });
-  }
-  if (callback !== undefined) callback();
-};
-
-exports.setCookies = (res, name, data, time, callback) => {
+exports.setCookies = (res, name, data, time, callback) => { // 设置cookies
   res.cookie(name, data, { expires: new Date(Date.now() + time * 1000), httpOnly: false });
   if (callback !== undefined) callback();
 };
 
-exports.getLoginState = (req) => {
+exports.getLoginState = (req) => { //获取登陆状态
   return req.cookies.token !== undefined;
 };
-
 
 exports.logout = (req, res, next) => { // 退出登陆
   res.cookie('isLogin', false, { expires: new Date(Date.now() + 8640000000), httpOnly: false });
@@ -181,42 +194,20 @@ exports.logout = (req, res, next) => { // 退出登陆
   next('route');
 };
 
-exports.makeToken = () => { // 生成网站令牌
-  var token = config.webId + '&' + exports.getNowTime();
-  token = exports.encrypt(token);
-  return token;
-};
-
-exports.getUserInfo = (token, callback) => { //获取用户信息
-  exports.post('/api/getInfo', { sid: config.webId, userToken: token, webToken: exports.makeToken() }, (data) => {
+exports.getUserInfo = (token, callback) => { //使用授权码获取用户信息
+  postToViolet('/api/getInfo', { sid: config.webId, userToken: token, webToken: makeToken() }, (data) => {
     if (data.state == 'failed') console.log('ERR: ' + data.reason);
     callback(data);
   });
 };
 
-exports.DBToken = (res, uid, oldToken, newToken, callback) => {
-  userDB.findOne({ uid: uid }, (err, val) => {
-    if (val === null) {
-      callback('NO_USER');
-    } else if (val.token != oldToken) {
-      callback('ERR_TOKEN');
-    } else {
-      res.locals.userData = val;
-      val.token = newToken;
-      val.save((err) => {});
-      callback('OK');
-    }
-  });
-};
-
-
-exports.makeNewToken = (req, res, uid, callback) => {
+exports.makeNewToken = (req, res, uid, callback) => { // 生成用户 token 并以 httpOnly 模式写入 cookies， 用于用户登陆
   let token = Math.round(Math.random() * 1000000);
   userDB.findOne({ uid: uid }, (err, val) => {
     val.token = token;
     val.save((err) => {});
     let userData = uid + '&' + exports.getNowTime() + '&' + token;
-    exports.makeUserToken(req, res, userData, () => {
+    makeUserToken(req, res, userData, () => {
       callback();
     });
   });
