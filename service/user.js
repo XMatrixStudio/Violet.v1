@@ -5,6 +5,7 @@ const db = require('./mongo.js');
 const site = require('./site.js');
 const verify = require('./sdk/verify.js');
 const spawn = require('child_process').spawn; //异步子进程模块
+const multiparty = require('multiparty');
 var userSchema = db.violet.Schema({
   uid: Number,
   token: Number,
@@ -354,11 +355,11 @@ exports.mGetUserInfo = (req, res, next) => {
 
 exports.mSetUserInfo = (req, res, next) => {
   userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
-    val.web = req.body.web;
-    val.birthDate = req.body.birthDate;
-    val.detail = req.body.detail;
-    val.phone = req.body.phone;
-    val.sex = req.body.sex;
+    if (req.body.web) val.web = req.body.web;
+    if (req.body.birthDate) val.birthDate = req.body.birthDate;
+    if (req.body.detail) val.detail = req.body.detail;
+    if (req.body.phone) val.phone = req.body.phone;
+    if (req.body.sex) val.sex = req.body.sex;
     val.save((err) => {});
     res.send({ state: 'ok' });
   });
@@ -366,14 +367,17 @@ exports.mSetUserInfo = (req, res, next) => {
 
 
 exports.changeAvatar = function(req, res, next) {
-  uploadToCos(verify.getUserId(res) + '.png', file).then((data) => {
-    userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
-      val.avatar = true;
-      val.save(() => {});
+  let form = new multiparty.Form();
+  form.parse(req, function(err, fields, files) {
+    uploadToCos(verify.getUserId(res) + '.png', files.croppedImage[0]).then((data) => {
+      userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
+        val.avatar = true;
+        val.save(() => {});
+      });
+      res.send({ state: 'ok', src: 'https://violet-1252808268.cosgz.myqcloud.com/' + verify.getUserId(res) + '.png' });
+    }).catch((err) => {
+      res.send({ state: 'failed', reason: err });
     });
-    res.send({ state: 'ok', src: 'https://violet-1252808268.cos.ap-guangzhou.myqcloud.com/' + verify.getUserId(res) + '.png' });
-  }).catch((err) => {
-    res.send({ state: 'failed', reason: err });
   });
 };
 
@@ -388,7 +392,7 @@ function getUserAvatar(uid, callback) {
         if (err) {
           callback('https://violet-1252808268.cosgz.myqcloud.com/0.png');
         } else {
-          callback('https://violet-1252808268.cos.ap-guangzhou.myqcloud.com/' + verify.getUserId(res) + '.png');
+          callback('https://violet-1252808268.cosgz.myqcloud.com/' + uid + '.png');
         }
       });
     } else {
@@ -405,9 +409,8 @@ function uploadToCos(name, file) {
     Key: name,
     ContentLength: file.size,
     ContentDisposition: name,
-    ContentEncoding: file.encoding,
-    ContentType: file.mimetype,
-    Body: fs.createReadStream('./' + file.path),
+    ContentType: 'image/png',
+    Body: fs.createReadStream(file.path),
   };
   let p = new Promise((resolve, reject) => {
     cos.putObject(params, function(err, data) {

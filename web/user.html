@@ -52,7 +52,7 @@
         <div class="panel panel-default">
           <div class="panel-heading">
             <p style="padding-top: 20px;text-align: center;">
-              <img id="userAvatar" class="img-circle" src="pic/10000.png" height="120px" width="120px" onclick="uploadFile()"></p>
+              <img id="userAvatar" class="img-circle" src="https://violet-1252808268.cosgz.myqcloud.com/0.png" height="120px" width="120px" onclick="uploadFile()"></p>
             <p id="userName" style="font-size: 20px;text-align: center;"></p>
           </div>
           <div class="panel-body" style="padding-top: 10%;">
@@ -106,7 +106,7 @@
               <div class="panel-footer" style="text-align: right;">
                 <input id="toTabAvatarInput" type="file" style="display:none;" accept="image/png,image/gif,image/jpeg,image/jp2">
                 <button id="toTabAvatar" href="#tabAvatar" aria-controls="tabAvatar" role="tab" data-toggle="tab" style="display:none;"></button>
-                <button class="btn btn-success" onclick="uploadFile()"><i class="fa fa-upload fa-fw"></i> 上传头像</button>
+                <button class="btn btn-success" onclick="uploadFile()"><i class="fa fa-picture-o fa-fw"></i> 修改头像</button>
                 <button class="btn btn-success" onclick="setUserInfo()"><i class="fa fa-pencil fa-fw"></i> 修改信息</button>
               </div>
             </div>
@@ -196,15 +196,17 @@
           <div role="tabpanel" class="tab-pane fade in" id="tabAvatar">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <p style="font-size: 22px;margin-bottom: -5px;"><i class="fa fa-key fa-1x fa-fw"></i> 上传头像</p>
+                <p style="font-size: 22px;margin-bottom: -5px;"><i id="backToMe" onclick="getUserInfo()" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab" class="fa fa-arrow-left fa-fw" style="margin-right: 20px;"></i> 上传头像</p>
               </div>
               <div class="panel-body" style="padding-top: 3%;">
                 <p id="fileHits" style="display: none;">请选择图片文件</p>
                 <img id="image" style="max-width:100%;">
               </div>
               <div class="panel-footer" style="text-align: right;">
-                <button type="button" class="btn btn-danger" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab"><i class="fa fa-arrow-left fa-fw"></i> 取消修改</button>
-                <button id="uploadBtn" type="button" class="btn btn-success" onclick="uploadAvatar()"><i class="fa fa-upload fa-fw"></i> 修改头像</button>
+                <button class="btn btn-warning" onclick="getUserInfo()" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab"><i class="fa fa-rotate-left fa-fw"></i> 取消修改</button>
+                <button class="btn btn-warning" onclick="uploadFile()"><i class="fa fa-folder-open-o fa-fw"></i> 重新选择</button>
+                <button type="button" class="btn btn-success" onclick="testAvatar()"><i class="fa fa-arrow-left fa-fw"></i> 浏览效果</button>
+                <button id="uploadBtn" type="button" class="btn btn-success" onclick="uploadAvatar()"><i class="fa fa-cloud-upload fa-fw"></i> 修改头像</button>
               </div>
             </div>
           </div>
@@ -432,7 +434,7 @@
             })
           }
         })
-        $('#userAvatar').attr('src', tabHome.user.avatar);
+        $('#userAvatar').attr('src', tabHome.user.avatar + '?temp=' + (new Date()).getTime());
         $('#userName').html('Hi, ' + tabHome.user.name);
         document.getElementsByName('optionsRadios')[tabHome.user.sex].checked = true;
         if (tabHome.user.class == 0) {
@@ -501,28 +503,50 @@
   }
 
   function uploadFile() {
+    $('#toTabAvatarInput').val('');
     document.getElementById('toTabAvatarInput').click();
     document.getElementById('toTabAvatar').click();
-    $('#image').cropper('destroy').attr('src', '').cropper(option); // 清空
+    $('#image').cropper('destroy').attr('src', 'favicon.svg').cropper(option); // 清空
     $('#uploadBtn').attr({
       "disabled": "disabled"
     });
     $('#fileHits').show();
   }
 
-  function uploadAvatar() {
-    var imageData = $('#image').cropper("getCroppedCanvas", {
+  function testAvatar() {
+    $('#image').cropper('getCroppedCanvas', {
       width: 256,
       height: 256
-    }).toDataURL('image/png');
-    $('#userAvatar').attr('src', imageData);
-    $.post('/api/upDateAvatar', {
-      imageData: imageData,
-    }, (data) => {
-      if (data.state == 'ok') {
-        sendNotice('修改头像成功');
-      }
-    })
+    }).toBlob(function(blob) {
+      $('#userAvatar').attr('src', URL.createObjectURL(blob));
+    });
+  }
+
+  function uploadAvatar() {
+    $('#image').cropper('getCroppedCanvas', {
+      width: 256,
+      height: 256
+    }).toBlob(function(blob) {
+      var formData = new FormData();
+      formData.append('croppedImage', blob);
+      $.ajax('/api/upDateAvatar', {
+        method: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(data) {
+          if (data.state == 'ok') {
+            sendNotice('修改头像成功');
+            $('#backToMe').click();
+          } else {
+            sendNotice('失败,未知错误');
+          }
+        },
+        error: function() {
+          console.log('Upload error');
+        }
+      });
+    });
   }
 
   $(function() {

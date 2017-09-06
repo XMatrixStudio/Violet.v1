@@ -4,8 +4,6 @@ const db = require('./mongo');
 const verify = require('./sdk/verify');
 const User = require('./user');
 const Site = require('./site');
-const multer = require('multer'); //上传模块
-const upload = multer({ dest: './uploads/' }); // 定义上传文件夹
 const cookieParser = require('cookie-parser'); // cookie模块
 const bodyParser = require('body-parser'); // post模块
 app.use(cookieParser()); // cookie模块
@@ -37,7 +35,7 @@ app.post('/getWebInfo', verify.checkToken, Site.getWebInfo); //获取网站信�
 app.post('/setWebInfo', verify.checkToken, Site.setWebInfo); //设置网站信息
 app.post('/addSite', verify.checkToken, Site.addSite); //增加网站
 app.post('/changeKey', verify.checkToken, Site.changeKey); //更改密钥
-app.post('/upDateAvatar', verify.checkToken, upload.single('avatar'), User.changeAvatar); // 更改头像
+app.post('/upDateAvatar', verify.checkToken, User.changeAvatar); // 更改头像
 // 监听端口
 const server = app.listen(30020, '127.0.0.1', function() {
   var host = server.address().address;
