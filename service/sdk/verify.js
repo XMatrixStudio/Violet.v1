@@ -2,21 +2,30 @@
 
 模块功能： Violet 客户端 SDK
 
-配置文件： violet.json
+配置文件： violet.json - host
 
+API:
+-----------
+post(path, data, callback(result)) 向认证服务器发送信息
+@param path : 请求服务类型 []
+@param data : 数据主体
+@param callback(result) : 返回请求结果
+@具体服务类型和返回数据结构请查看相关文档
+******
+example code :
+exports.post('/user/post', { data: 'hello, world' }, (data) => {
+  console.log(data);
+});
+----------
 */
-// 使用前准备
-const userDB = require('../user.js').db; //授权数据库
-// ------------------------
+
 const fs = require('fs'); //文件处理
-const config = JSON.parse(fs.readFileSync('./config/violet.json')); // 配置文件
+const config = JSON.parse(fs.readFileSync('./config/violet.json'));
 const https = require('https'); // https模块
 const queryString = require("querystring"); // 转化为格式化对象
 const crypto = require('crypto');
 const cookieParser = require('cookie-parser'); // cookie模块
-
-
-
+const userDB = require('../user.js').db;
 exports.post = (path, data, callback) => {
   let postData = queryString.stringify(data);
   let options = {
@@ -35,9 +44,9 @@ exports.post = (path, data, callback) => {
     }
     res.on('data', (d) => {
       if (d.toString('ascii').indexOf('"state":"ok"') != -1) {
-        return callback({ state: 'ok', userData: JSON.parse(d.toString('ascii')) });
+        return callback({ state: 'ok', userData: JSON.parse(d.toString('utf8')) });
       } else {
-        return callback({ state: 'failed', reason: d.toString('ascii') });
+        return callback({ state: 'failed', reason: d.toString('utf8') });
       }
     });
   });
@@ -155,13 +164,13 @@ exports.makeUserToken = (req, res, userData, callback) => { //设置cookies信�
   if (callback !== undefined) callback();
 };
 
-exports.getLoginState = (req) => {
-  return req.cookies.token !== undefined;
-};
-
 exports.setCookies = (res, name, data, time, callback) => {
   res.cookie(name, data, { expires: new Date(Date.now() + time * 1000), httpOnly: false });
   if (callback !== undefined) callback();
+};
+
+exports.getLoginState = (req) => {
+  return req.cookies.token !== undefined;
 };
 
 

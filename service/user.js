@@ -1,6 +1,7 @@
 const fs = require('fs');
 const COS = require('cos-nodejs-sdk-v5'); // cos模块
-const cos = new COS(JSON.parse(fs.readFileSync('./config/cos.json')));
+const cosConfig = JSON.parse(fs.readFileSync('./config/cos.json'));
+const cos = new COS(cosConfig);
 const db = require('./mongo.js');
 const site = require('./site.js');
 const verify = require('./sdk/verify.js');
@@ -374,7 +375,7 @@ exports.changeAvatar = function(req, res, next) {
         val.avatar = true;
         val.save(() => {});
       });
-      res.send({ state: 'ok', src: 'https://violet-1252808268.cosgz.myqcloud.com/' + verify.getUserId(res) + '.png' });
+      res.send({ state: 'ok', src: cosConfig.violetUrl + verify.getUserId(res) + '.png' });
     }).catch((err) => {
       res.send({ state: 'failed', reason: err });
     });
@@ -385,18 +386,18 @@ function getUserAvatar(uid, callback) {
   userDB.findOne({ uid: uid }, (err, val) => {
     if (val && val.avatar === true) {
       cos.headObject({
-        Bucket: 'violet',
-        Region: 'ap-guangzhou',
+        Bucket: cosConfig.violetBucket,
+        Region: cosConfig.violetRegion,
         Key: uid + '.png',
       }, function(err, data) {
         if (err) {
-          callback('https://violet-1252808268.cosgz.myqcloud.com/0.png');
+          callback(cosConfig.violetUrl + '0.png');
         } else {
-          callback('https://violet-1252808268.cosgz.myqcloud.com/' + uid + '.png');
+          callback(cosConfig.violetUrl + uid + '.png');
         }
       });
     } else {
-      callback('https://violet-1252808268.cosgz.myqcloud.com/0.png');
+      callback(cosConfig.violetUrl + '0.png');
     }
   });
 }
@@ -404,8 +405,8 @@ function getUserAvatar(uid, callback) {
 
 function uploadToCos(name, file) {
   let params = {
-    Bucket: 'violet',
-    Region: 'ap-guangzhou',
+    Bucket: cosConfig.violetBucket,
+    Region: cosConfig.violetRegion,
     Key: name,
     ContentLength: file.size,
     ContentDisposition: name,

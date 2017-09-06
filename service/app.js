@@ -1,11 +1,13 @@
 const express = require('express');
 const app = express();
+const fs = require('fs');
 const db = require('./mongo');
 const verify = require('./sdk/verify');
 const User = require('./user');
 const Site = require('./site');
 const cookieParser = require('cookie-parser'); // cookie模块
 const bodyParser = require('body-parser'); // post模块
+const appConfig = JSON.parse(fs.readFileSync('./config/app.json'));
 app.use(cookieParser()); // cookie模块
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -37,7 +39,7 @@ app.post('/addSite', verify.checkToken, Site.addSite); //增加网站
 app.post('/changeKey', verify.checkToken, Site.changeKey); //更改密钥
 app.post('/upDateAvatar', verify.checkToken, User.changeAvatar); // 更改头像
 // 监听端口
-const server = app.listen(30020, '127.0.0.1', function() {
+const server = app.listen(appConfig.port, appConfig.host, function() {
   var host = server.address().address;
   var port = server.address().port;
   console.log('App listening at http://%s:%s', host, port);
