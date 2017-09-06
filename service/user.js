@@ -21,6 +21,7 @@ var userSchema = db.violet.Schema({
   emailTime: Date,
   sites: [Number],
   class: Number,
+  avatar: Boolean,
 }, { collection: 'users' });
 var userDB = db.violet.model('users', userSchema);
 exports.db = userDB;
@@ -365,7 +366,11 @@ exports.mSetUserInfo = (req, res, next) => {
 
 
 exports.changeAvatar = function(req, res, next) {
-  uploadToCos(verify.getUserId(res) + '.png', req.file).then((data) => {
+  uploadToCos(verify.getUserId(res) + '.png', file).then((data) => {
+    userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
+      val.avatar = true;
+      val.save(() => {});
+    });
     res.send({ state: 'ok', src: 'https://violet-1252808268.cos.ap-guangzhou.myqcloud.com/' + verify.getUserId(res) + '.png' });
   }).catch((err) => {
     res.send({ state: 'failed', reason: err });
@@ -373,15 +378,21 @@ exports.changeAvatar = function(req, res, next) {
 };
 
 function getUserAvatar(uid, callback) {
-  cos.headObject({
-    Bucket: 'violet',
-    Region: 'ap-guangzhou',
-    Key: uid + '.png',
-  }, function(err, data) {
-    if (err) {
-      callback('https://violet-1252808268.cosgz.myqcloud.com/0.png');
+  userDB.findOne({ uid: uid }, (err, val) => {
+    if (val && val.avatar === true) {
+      cos.headObject({
+        Bucket: 'violet',
+        Region: 'ap-guangzhou',
+        Key: uid + '.png',
+      }, function(err, data) {
+        if (err) {
+          callback('https://violet-1252808268.cosgz.myqcloud.com/0.png');
+        } else {
+          callback('https://violet-1252808268.cos.ap-guangzhou.myqcloud.com/' + verify.getUserId(res) + '.png');
+        }
+      });
     } else {
-      callback('https://violet-1252808268.cos.ap-guangzhou.myqcloud.com/' + verify.getUserId(res) + '.png');
+      callback('https://violet-1252808268.cosgz.myqcloud.com/0.png');
     }
   });
 }
