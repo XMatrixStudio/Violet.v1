@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+
+<!-- Copyright (c) 2017 XMatrix Studio -->
+<!-- Licensed under the MIT license -->
+
 <html>
 
 <head>
@@ -42,7 +46,8 @@
       <div id="noticeDiv"></div>
       <div class="col-md-12">
         <p style="font-size: 50px;color: #eee">
-          <svg t="1498148324009" class="icon" style="margin-bottom: -7px;" viewbox="0 0 1038 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7587" xmlns:xlink="http://www.w3.org/1999/xlink" width="50" height="50">
+          <svg t="1498148324009" class="icon" style="margin-bottom: -7px;" viewbox="0 0 1038 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+            p-id="7587" xmlns:xlink="http://www.w3.org/1999/xlink" width="50" height="50">
             <path d="M971.172807 331.503669c34.709814 586.419956-371.606299 636.62524-455.83842 692.496331-84.26712-55.87109-490.583232-106.076374-455.907417-692.496331C66.662723 209.830828 0.007001 180.751822 0.007001 180.751822L39.631647 57.884022C158.540582 136.076349 386.459792 133.038453 515.334387 0c128.805597 133.038453 356.724807 136.075349 475.667742 57.884022l39.658645 122.8678s-66.654722 29.079006-59.487967 150.751847z m-320.514045-33.34486L531.64783 632.051397a304.540591 304.540591 0 0 0-14.709497 65.187772H514.822405c-1.672943-17.952386-7.133756-40.238625-16.38244-66.859715L384.889846 298.158809h-90.000924l174.95002 465.088103h83.243155l184.198704-465.088103H650.657762z"
               fill="#eee" p-id="7588" class=""></path>
           </svg> Violet User Center
@@ -52,14 +57,18 @@
         <div class="panel panel-default">
           <div class="panel-heading">
             <p style="padding-top: 20px;text-align: center;">
-              <img id="userAvatar" class="img-circle" src="https://violet-1252808268.cosgz.myqcloud.com/0.png" height="120px" width="120px" onclick="uploadFile()"></p>
+              <img id="userAvatar" class="img-circle" src="https://violet-1252808268.cosgz.myqcloud.com/0.png" height="120px" width="120px"
+                onclick="uploadFile()"></p>
             <p id="userName" style="font-size: 20px;text-align: center;"></p>
           </div>
           <div class="panel-body" style="padding-top: 10%;">
             <button onclick="cleanNotice()" class="btn btn-success btn-block" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab"><i class="fa fa-info fa-fw"></i> 个人资料</button>
-            <button onclick="cleanNotice()" class="btn btn-success btn-block" href="#tabPassword" aria-controls="tabPassword" role="tab" data-toggle="tab"><i class="fa fa-key fa-fw"></i> 修改密码</button>
-            <button onclick="cleanNotice()" class="btn btn-success btn-block" href="#tabViolet" aria-controls="tabViolet" role="tab" data-toggle="tab"><i class="fa fa-check fa-fw"></i> 授权管理</button>
-            <button onclick="cleanNotice()" id="devButton" class="btn btn-success btn-block" href="#tabVioletDev" aria-controls="tabVioletDev" role="tab" data-toggle="tab"><i class="fa fa-globe fa-fw"></i> 我的网站</button>
+            <button onclick="cleanNotice()" class="btn btn-success btn-block" href="#tabPassword" aria-controls="tabPassword" role="tab"
+              data-toggle="tab"><i class="fa fa-key fa-fw"></i> 修改密码</button>
+            <button onclick="cleanNotice()" class="btn btn-success btn-block" href="#tabViolet" aria-controls="tabViolet" role="tab"
+              data-toggle="tab"><i class="fa fa-check fa-fw"></i> 授权管理</button>
+            <button onclick="cleanNotice()" id="devButton" class="btn btn-success btn-block" href="#tabVioletDev" aria-controls="tabVioletDev"
+              role="tab" data-toggle="tab"><i class="fa fa-globe fa-fw"></i> 我的网站</button>
             <button onclick="logout()" class="btn btn-danger btn-block"><i class="fa fa-sign-out fa-fw"></i> 退出登陆</button>
           </div>
         </div>
@@ -122,7 +131,8 @@
                     <i class="fa fa-circle-thin fa-fw"></i> {{web.name}}
                   </div>
                   <div class="col-xs-offset-7" style="font-size: 20px;text-align: right;">
-                    <button class="btn btn-success" :value="index" onclick="toWebData(this)" href="#tabWebDev" aria-controls="tabWebDev" role="tab" data-toggle="tab"><i class="fa fa-pencil fa-fw"></i> 详细信息</button>
+                    <button class="btn btn-success" :value="index" onclick="toWebData(this)" href="#tabWebDev" aria-controls="tabWebDev" role="tab"
+                      data-toggle="tab"><i class="fa fa-pencil fa-fw"></i> 详细信息</button>
                   </div>
                 </div>
               </div>
@@ -176,8 +186,8 @@
                   <span class="input-group-addon"><i class="fa fa-gg"></i></span>
                   <input type="name" id="vCode" class="form-control" placeholder="邮箱验证码">
                   <span class="input-group-btn">
-                                    <button id="gCode" class="btn btn-success" type="button" onclick="getCode()" style="margin-left: 10px;">发送验证码</button>
-                                    </span>
+                    <button id="gCode" class="btn btn-success" type="button" onclick="getCode()" style="margin-left: 10px;">发送验证码</button>
+                  </span>
                 </div>
                 <div class="form-group input-group">
                   <span class="input-group-addon"><i class="fa fa-key"></i></span>
@@ -196,7 +206,8 @@
           <div role="tabpanel" class="tab-pane fade in" id="tabAvatar">
             <div class="panel panel-default">
               <div class="panel-heading">
-                <p style="font-size: 22px;margin-bottom: -5px;"><i id="backToMe" onclick="getUserInfo()" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab" class="fa fa-arrow-left fa-fw" style="margin-right: 20px;"></i> 上传头像</p>
+                <p style="font-size: 22px;margin-bottom: -5px;"><i id="backToMe" onclick="getUserInfo()" href="#tabHome" aria-controls="tabHome" role="tab" data-toggle="tab"
+                    class="fa fa-arrow-left fa-fw" style="margin-right: 20px;"></i> 上传头像</p>
               </div>
               <div class="panel-body" style="padding-top: 3%;">
                 <p id="fileHits" style="display: none;">请选择图片文件</p>
@@ -251,21 +262,21 @@
 <script src="https://cdn.bootcss.com/cropper/3.0.0/cropper.min.js"></script>
 <script src="js/violet.js"></script>
 <script>
-  var tabViolet = new Vue({
+  let tabViolet = new Vue({
     el: '#tabViolet',
     data: {
       webs: [],
     }
   });
 
-  var tabVioletDev = new Vue({
+  let tabVioletDev = new Vue({
     el: '#tabVioletDev',
     data: {
       webs: [],
     }
   });
 
-  var tabHome = new Vue({
+  let tabHome = new Vue({
     el: '#tabHome',
     data: {
       user: {}
@@ -275,41 +286,34 @@
   let option = {
     viewMode: 2,
     dragMode: 'crop',
-    aspectRatio: 1 / 1,
-    crop: function(e) {
-      // Output the result data for cropping image.
-      /*console.log(e.x);
-      console.log(e.y);
-      console.log(e.width);
-      console.log(e.height);
-      console.log(e.rotate);
-      console.log(e.scaleX);
-      console.log(e.scaleY);*/
-    }
+    aspectRatio: 1 / 1
   };
+
   let URL = window.URL || window.webkitURL;
 
+  let countdown = 120;
 
+
+  // 取消授权提示，仅做提示，不做取消操作处理
   function deleteWeb(e) {
     document.getElementById('sureBtn').value = e.getAttribute('value');
     $('#dialogTitle').html('确认你的操作');
     $('#dialogText').html('是否取消对网站 <b>' + e.getAttribute('data') + '</b> 的授权');
   }
 
-
+  // 取消授权
   function noAuth(e) {
     $.post('/api/noAuth', {
-      sid: e.getAttribute('value'),
+      sid: e.getAttribute('value').replace(/\'/g, '').replace(/\"/g, ''),
     }, (data) => {
       getUserInfo();
     });
   }
 
-  var countdown = 120;
-
+  // 发送邮箱认证验证码
   function getCode() {
     $.post('/api/getCode', {
-      email: tabHome.user.email,
+      email: tabHome.user.email.replace(/\'/g, '').replace(/\"/g, ''),
     }, (data) => {
       if (data.state == 'ok') {
         setTime();
@@ -328,6 +332,7 @@
     });
   }
 
+  // 找回密码
   function reSetPwd() {
     if (isNullTest('vCode', '验证码不能为空')) return;
     if (isNullTest('userPasswordF', ' 密码不能为空')) return;
@@ -339,9 +344,9 @@
       return;
     }
     $.post('/api/reset', {
-      email: tabHome.user.email,
-      vCode: $('#vCode').val(),
-      password: $('#userPasswordF').val(),
+      email: tabHome.user.email.replace(/\'/g, '').replace(/\"/g, ''),
+      vCode: $('#vCode').val().replace(/\'/g, '').replace(/\"/g, ''),
+      password: $('#userPasswordF').val().replace(/\'/g, '').replace(/\"/g, ''),
     }, (data) => {
       if (data.state == 'ok') {
         $('#userEmail').val($('#userEmailF').val());
@@ -364,6 +369,7 @@
     });
   }
 
+  // (开发者) 添加使用授权功能的网站
   function addSite() {
     $.post('/api/addSite', {}, (data) => {
       if (data.state == 'ok') {
@@ -379,12 +385,13 @@
     });
   }
 
+  // 设置用户信息
   function setUserInfo() {
-    let birthDate = new Date($('#userBirthDate').val());
-    let phone = $('#userPhone').val();
-    let web = $('#userWeb').val();
-    let datail = $('#userDetail').val();
-    let sex = $("input[type='radio']:checked").val();
+    let birthDate = new Date($('#userBirthDate').val().replace(/\'/g, '').replace(/\"/g, ''));
+    let phone = $('#userPhone').val().replace(/\'/g, '').replace(/\"/g, '');
+    let web = $('#userWeb').val().replace(/\'/g, '').replace(/\"/g, '');
+    let datail = $('#userDetail').val().replace(/\'/g, '').replace(/\"/g, '');
+    let sex = $("input[type='radio']:checked").val().replace(/\'/g, '').replace(/\"/g, '');
     if (birthDate == 'Invalid Date') {
       sendNotice('生日非法');
       return false;
@@ -410,19 +417,16 @@
     });
   }
 
-  function upload() {
-    // 坑太大填不上
-  }
-
+  // 获取用户信息
   function getUserInfo() {
     $.post('/api/getUserInfo', {}, (data) => {
       if (data.state == 'ok') {
         tabHome.user = data.userData;
         tabViolet.webs = data.webData;
-        Vue.nextTick(function() {
-          for (var i in tabViolet.webs) {
-            $('#btnSignIn' + i).click(function() {
-              var w = window.open()
+        Vue.nextTick(function () {
+          for (let i in tabViolet.webs) {
+            $('#btnSignIn' + i).click(function () {
+              let w = window.open()
               $.post('/api/auth', {
                 sid: this.getAttribute('value'),
               }, (data) => {
@@ -441,7 +445,7 @@
                   }
                 } else {
                   w.location = 'https://' + data.url + '?code=' + data.code
-                    //window.open('https://' + data.url + '?code=' + data.code);
+                  //window.open('https://' + data.url + '?code=' + data.code);
                 }
               });
             })
@@ -461,11 +465,12 @@
     });
   }
 
+  // 设置网站信息
   function setWebInfo() {
     $.post('/api/setWebInfo', {
-      sid: $('#webID').html(),
-      url: $('#callBack').val(),
-      name: $('#theSiteName').val(),
+      sid: $('#webID').html().replace(/\'/g, '').replace(/\"/g, ''),
+      url: $('#callBack').val().replace(/\'/g, '').replace(/\"/g, ''),
+      name: $('#theSiteName').val().replace(/\'/g, '').replace(/\"/g, ''),
     }, (data) => {
       if (data.state == 'ok') {
         sendNotice('修改信息成功');
@@ -478,6 +483,7 @@
     });
   }
 
+  // 访问授权网站
   function toWebData(e) {
     $('#webName').html(tabVioletDev.webs[e.getAttribute('value')].name);
     $('#theSiteName').val(tabVioletDev.webs[e.getAttribute('value')].name);
@@ -489,6 +495,7 @@
     $('#webNum').html(tabVioletDev.webs[e.getAttribute('value')].loginTimes);
   }
 
+  // 获取网站信息
   function getWebInfo() {
     $.post('/api/getWebInfo', {}, (data) => {
       if (data.state == 'ok') {
@@ -499,9 +506,10 @@
     });
   }
 
+  // 修改网站密钥
   function changeKey() {
     $.post('/api/changeKey', {
-      sid: $('#webID').html()
+      sid: $('#webID').html().replace(/\'/g, '').replace(/\"/g, '')
     }, (data) => {
       if (data.state == 'ok') {
         sendNotice('成功更改网站Key,请及时修改配置文件');
@@ -515,6 +523,7 @@
     });
   }
 
+  // 选定本地图片，作为头像
   function uploadFile() {
     $('#toTabAvatarInput').val('');
     document.getElementById('toTabAvatarInput').click();
@@ -526,28 +535,30 @@
     $('#fileHits').show();
   }
 
+  // 预览头像
   function testAvatar() {
     $('#image').cropper('getCroppedCanvas', {
       width: 256,
       height: 256
-    }).toBlob(function(blob) {
+    }).toBlob(function (blob) {
       $('#userAvatar').attr('src', URL.createObjectURL(blob));
     });
   }
 
+  // 上传头像
   function uploadAvatar() {
     $('#image').cropper('getCroppedCanvas', {
       width: 256,
       height: 256
-    }).toBlob(function(blob) {
-      var formData = new FormData();
+    }).toBlob(function (blob) {
+      let formData = new FormData();
       formData.append('croppedImage', blob);
       $.ajax('/api/upDateAvatar', {
         method: "POST",
         data: formData,
         processData: false,
         contentType: false,
-        success: function(data) {
+        success: function (data) {
           if (data.state == 'ok') {
             sendNotice('修改头像成功');
             $('#backToMe').click();
@@ -555,14 +566,15 @@
             sendNotice('失败,未知错误');
           }
         },
-        error: function() {
+        error: function () {
           console.log('Upload error');
         }
       });
     });
   }
 
-  $(function() {
+
+  $(function () {
     getUserInfo();
     $('#image').cropper(option);
     $('#toTabAvatarInput').change(() => {
@@ -577,6 +589,7 @@
       $('#fileHits').hide();
     });
   });
+
 </script>
 
 </html>

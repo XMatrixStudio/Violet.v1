@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+
+<!-- Copyright (c) 2017 XMatrix Studio -->
+<!-- Licensed under the MIT license -->
+
 <html>
 
 <head>
@@ -114,8 +118,8 @@
                 <span class="input-group-addon"><i class="fa fa-gg"></i></span>
                 <input type="name" id="vCode" class="form-control" placeholder="邮箱验证码">
                 <span class="input-group-btn">
-                            <button id="gCode" class="btn btn-success" type="button" onclick="getCode()" style="margin-left: 10px;">获取验证码</button>
-                            </span>
+                  <button id="gCode" class="btn btn-success" type="button" onclick="getCode()" style="margin-left: 10px;">获取验证码</button>
+                </span>
               </div>
               <div class="form-group">
                 <div class="input-group">
@@ -157,8 +161,8 @@
                 <span class="input-group-addon"><i class="fa fa-gg"></i></span>
                 <input type="name" id="vCodeE" class="form-control" placeholder="邮箱验证码">
                 <span class="input-group-btn">
-                            <button id="gCodeE" class="btn btn-success" type="button" onclick="getCodeE()" style="margin-left: 10px;">获取验证码</button>
-                            </span>
+                  <button id="gCodeE" class="btn btn-success" type="button" onclick="getCodeE()" style="margin-left: 10px;">获取验证码</button>
+                </span>
               </div>
               <button class="btn btn-success btn-lg" onclick="emailCheck()"><i class="fa fa-check fa-fw"></i>确认</button>
             </div>
@@ -185,8 +189,8 @@
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="js/violet.js"></script>
 <script>
-  var countdown = 120;
-  var countdownE = 120;
+  let countdown = 120;
+  let countdownE = 120;
   $('#user').bind('keypress', function(event) {
     if (event.keyCode == "13") {
       $('#userPassword').focus();
@@ -197,7 +201,9 @@
       login();
     }
   });
-  $(() => {
+
+
+  $(function () {
     if (getCookie('remember') == 'true') {
       document.getElementById('checkRemember').checked = true
     }
@@ -232,6 +238,8 @@
     }
   });
 
+
+  // 登录
   function login() {
     if (document.getElementById('checkRemember').checked) {
       document.cookie = "remember=true";
@@ -272,6 +280,7 @@
     });
   }
 
+  // 认证
   function auth() {
     $.post('/api/auth', {
       sid: getQueryString('sid') === null ? 10000 : getQueryString('sid'),
@@ -295,6 +304,7 @@
     });
   }
 
+  // 注册
   function joinIn() {
     if (isNullTest('userNameR', '注册失败： 用户名不能为空')) return;
     if (isNullTest('userEmailR', '注册失败： 邮箱不能为空')) return;
@@ -340,6 +350,7 @@
     });
   }
 
+  // 验证邮箱
   function emailCheck() {
     if (isNullTest('vCodeE', '验证码不能为空')) return;
     $.post('/api/validEmail', {
@@ -372,6 +383,7 @@
     });
   }
 
+  // 找回密码
   function reSetPwd() {
     if (isNullTest('userEmailF', '邮箱不能为空')) return;
     if (isNullTest('vCode', '验证码不能为空')) return;
@@ -412,8 +424,7 @@
     });
   }
 
-
-
+  // 获取找回密码的验证码
   function getCode() {
     if (isNullTest('userEmailF', '邮箱不能为空')) return;
     $.post('/api/getCode', {
@@ -436,11 +447,13 @@
     });
   }
 
+  // 登出
   function logout() {
     $.post('/api/logout', {}, (data) => {});
     showLoginDiv();
   }
 
+  // 获取邮箱认证验证码
   function getCodeE() {
     $.post('/api/getCode', {
       email: $('#userEmailE').html()
@@ -462,6 +475,7 @@
       }
     });
   }
+
 
   function showAuthDiv(data) {
     $('#siteNameA').html(data.siteName);
