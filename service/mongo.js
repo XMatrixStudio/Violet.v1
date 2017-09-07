@@ -1,32 +1,44 @@
-var mongoose = require('mongoose');
+/*
+  Copyright (c) 2017 XMatrix Studio
+  Licensed under the MIT license
+
+  Description: MongoDB模块
+ */
+
+
+const mongoose = require('mongoose');
 const fs = require('fs'); //文件处理
 const config = JSON.parse(fs.readFileSync('./config/mongodb.json'));
+let mongodbStr = 'mongodb://' +
+                 config.user + ':' +
+                 config.password + '@' +
+                 config.host + ':' +
+                 config.port + '/' +
+                 config.dbName;
 mongoose.Promise = global.Promise;
-let mongodbStr =
-  'mongodb://' +
-  config.user + ':' +
-  config.password + '@' +
-  config.host + ':' +
-  config.port + '/' +
-  config.dbName;
 mongoose.connect(mongodbStr, { useMongoClient: true });
-var db = mongoose.connection;
+let db = mongoose.connection;
+
+
 db.on('error', () => {
   console.error.bind(console, 'connection error:');
 }); // 发生错误
 db.on('disconnected', () => {
   console.log('Mongoose connection disconnected');
 }); // 连接断开
-db.on('connected', function() {
+db.on('connected', function () {
   console.log('Mongoose connection Success');
-});
+}); // 连接成功
+
+
 // 插入数据
 exports.insertDate = (myModel, data, callback) => {
-  var object = new myModel(data); // 创建一个数据对象
+  let object = new myModel(data); // 创建一个数据对象
   object.save((err, res) => {
     if (callback !== undefined) callback();
   });
 };
+
 exports.violet = mongoose;
 
 /*

@@ -380,12 +380,25 @@
   }
 
   function setUserInfo() {
+    let birthDate = new Date($('#userBirthDate').val());
+    let phone = $('#userPhone').val();
+    let web = $('#userWeb').val();
+    let datail = $('#userDetail').val();
+    let sex = $("input[type='radio']:checked").val();
+    if (birthDate == 'Invalid Date') {
+      sendNotice('生日非法');
+      return false;
+    }
+    if (phone != '' && !(/^1[0-9]{10}$/.test(phone))) {
+      sendNotice('手机号码非法');
+      return false;
+    }
     $.post('/api/setUserInfo', {
-      birthDate: $('#userBirthDate').val(),
-      phone: $('#userPhone').val(),
-      web: $('#userWeb').val(),
-      detail: $('#userDetail').val(),
-      sex: $("input[type='radio']:checked").val(),
+      birthDate: birthDate,
+      phone: phone,
+      web: web,
+      detail: datail,
+      sex: sex,
     }, (data) => {
       if (data.state == 'ok') {
         sendNotice('修改个人信息成功');

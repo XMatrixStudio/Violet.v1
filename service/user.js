@@ -1,3 +1,10 @@
+/*
+  Copyright (c) 2017 XMatrix Studio
+  Licensed under the MIT license
+
+  Description: User API 实现
+ */
+
 const fs = require('fs');
 const COS = require('cos-nodejs-sdk-v5'); // cos模块
 const cosConfig = JSON.parse(fs.readFileSync('./config/cos.json'));
@@ -7,7 +14,7 @@ const site = require('./site.js');
 const verify = require('./sdk/verify.js');
 const spawn = require('child_process').spawn; //异步子进程模块
 const multiparty = require('multiparty');
-var userSchema = db.violet.Schema({
+let userSchema = db.violet.Schema({
   uid: Number,
   token: Number,
   vCode: Number,
@@ -25,8 +32,11 @@ var userSchema = db.violet.Schema({
   class: Number,
   avatar: Boolean,
 }, { collection: 'users' });
-var userDB = db.violet.model('users', userSchema);
+let userDB = db.violet.model('users', userSchema);
+
+
 exports.db = userDB;
+
 // ------------------------------------------------
 exports.register = (req, res, next) => {
   if (!regExp(/^[a-zA-Z0-9]{3,20}$/, req.body.name, 'ILLEGAL_NAME', res, next)) return;
@@ -42,7 +52,7 @@ exports.register = (req, res, next) => {
   });
 };
 
-var register_email = (req, res, next) => {
+let register_email = (req, res, next) => {
   userDB.count({ email: { "$regex": "^" + req.body.email + "$", "$options": "i" } }, (err, val) => {
     if (err) {
       sendErr(err, res, next);
@@ -54,7 +64,7 @@ var register_email = (req, res, next) => {
   });
 };
 
-var register_write = (req, res, next) => {
+let register_write = (req, res, next) => {
   userDB.count({}, (err, val) => {
     if (err) {
       sendErr(err, res, next);
@@ -99,7 +109,7 @@ exports.login = (req, res, next) => {
   }
 };
 
-var login_pwd = (req, res, next, userVal) => {
+let login_pwd = (req, res, next, userVal) => {
   if (userVal.password === verify.makeASha(req.body.password)) {
     sendSiteInfo(req, res, next, userVal);
   } else {
@@ -107,7 +117,7 @@ var login_pwd = (req, res, next, userVal) => {
   }
 };
 
-var sendSiteInfo = (req, res, next, userVal) => {
+let sendSiteInfo = (req, res, next, userVal) => {
   site.findSiteById(req.body.sid, (val) => {
     if (userVal.valid === true) {
       let theSiteName;
@@ -146,10 +156,10 @@ exports.getCode = (req, res, next) => {
   if (!regExp(/^(\w)+(\.\w+)*@(\w)+((\.\w{2,9}))$/, req.body.email, 'ILLEGAL_EMAIL', res, next)) return;
   userDB.findOne({ email: req.body.email }, (err, val) => {
     if (val !== null) {
-      var nowTime = new Date();
+      let nowTime = new Date();
       if (val.emailTime === undefined ||
         (nowTime.getTime() - val.emailTime.getTime()) > 60) {
-        var code = Math.round(100000 + Math.random() * 1000000);
+        let code = Math.round(100000 + Math.random() * 1000000);
         val.emailTime = nowTime;
         val.vCode = code;
         val.save((err) => {});
@@ -164,9 +174,9 @@ exports.getCode = (req, res, next) => {
 };
 
 
-var getCode_sendEmail = (req, res, next, code) => {
-  var mail1 = fs.readFileSync('data/mail1.data');
-  var mail2 = fs.readFileSync('data/mail2.data');
+let getCode_sendEmail = (req, res, next, code) => {
+  let mail1 = fs.readFileSync('data/mail1.data');
+  let mail2 = fs.readFileSync('data/mail2.data');
   fs.writeFile('mail.html', mail1 + code + mail2, (err) => {
     if (err) console.error(err);
     spawn('./sendMail.sh', [req.body.email]);
@@ -181,7 +191,7 @@ exports.reset = (req, res, next) => {
   if (!regExp(/^(\w)+(\.\w+)*@(\w)+((\.\w{2,9}))$/, req.body.email, 'ILLEGAL_EMAIL', res, next)) return;
 
   userDB.findOne({ email: req.body.email }, (err, val) => {
-    var nowTime = new Date();
+    let nowTime = new Date();
     if (val === null) {
       sendErr('NO_EMAIL', res, next);
     } else if (val.vCode == req.body.vCode && val.emailTime !== undefined && verify.comTime(val.emailTime) < 600) {
@@ -202,8 +212,8 @@ exports.reset = (req, res, next) => {
 exports.auth = (req, res, next) => {
   site.findSiteById(req.body.sid, (val) => {
     if (val !== null) {
-      var userId = verify.getUserId(res);
-      var siteUrl = val.url;
+      let userId = verify.getUserId(res);
+      let siteUrl = val.url;
       userDB.findOne({ uid: userId }, (err, val) => {
         if (val.sites.indexOf(req.body.sid) == -1) {
           val.sites.push(req.body.sid);
@@ -232,8 +242,8 @@ exports.noAuth = (req, res, next) => {
   });
 };
 
-var createCode = (uid) => {
-  var userData = uid + '&' + verify.getNowTime();
+let createCode = (uid) => {
+  let userData = uid + '&' + verify.getNowTime();
   return verify.encrypt(userData);
 };
 
@@ -243,8 +253,8 @@ exports.getInfo = (req, res, next) => {
     if (val === null) {
       sendErr('NO_SITE', res, next);
     } else {
-      var userData = verify.decrypt(req.body.userToken).split('&');
-      var webData = verify.decrypt(req.body.webToken, val.key).split('&');
+      let userData = verify.decrypt(req.body.userToken).split('&');
+      let webData = verify.decrypt(req.body.webToken, val.key).split('&');
       if (userData[0] === undefined || userData[1] === undefined || (verify.getNowTime() - userData[1]) > 60) {
         sendErr('USER_ERR', res, next);
       } else if (webData[0] === undefined || webData[1] === undefined || (verify.getNowTime() - webData[1]) > 60) {
@@ -287,7 +297,7 @@ exports.validEmail = (req, res, next) => {
       } else if (verify.comTime(val.emailTime) > 600) {
         sendErr('TIMEOUT', res, next);
       } else { //验证码正确
-        var nowTime = new Date();
+        let nowTime = new Date();
         nowTime.setFullYear(2000, 1, 1);
         userData = val;
         userData.valid = true;
@@ -309,7 +319,7 @@ exports.getUser = (req, res, next) => {
 // ------------------------------------------------
 // ------------------------------------------------
 
-var regExp = (reg, str, err, res, next) => {
+let regExp = (reg, str, err, res, next) => {
   if (reg.test(str)) {
     return true;
   } else {
@@ -318,7 +328,7 @@ var regExp = (reg, str, err, res, next) => {
   }
 };
 
-var sendErr = (str, res, next) => {
+let sendErr = (str, res, next) => {
   console.log('ERR: ' + str);
   res.send({
     state: 'failed',

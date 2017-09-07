@@ -1,6 +1,13 @@
+/*
+  Copyright (c) 2017 XMatrix Studio
+  Licensed under the MIT license
+
+  Description: Site API 实现
+ */
+
 const db = require('./mongo.js');
 const verify = require('./sdk/verify.js');
-var siteSchema = db.violet.Schema({
+let siteSchema = db.violet.Schema({
   sid: Number,
   name: String,
   url: String,
@@ -8,7 +15,9 @@ var siteSchema = db.violet.Schema({
   uid: Number,
   key: String,
 }, { collection: 'sites' });
-var siteDB = db.violet.model('sites', siteSchema);
+let siteDB = db.violet.model('sites', siteSchema);
+
+
 exports.db = siteDB;
 
 exports.addTimesById = (id) => {

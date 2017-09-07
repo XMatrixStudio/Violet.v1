@@ -60,8 +60,8 @@ exports.post = (path, data, callback) => {
 exports.encrypt = (json, key) => {
   let myKey = key;
   if (myKey === undefined) myKey = config.key;
-  var cipher = crypto.createCipher('aes192', myKey);
-  var enc = cipher.update(JSON.stringify(json), 'utf8', 'hex');
+  let cipher = crypto.createCipher('aes192', myKey);
+  let enc = cipher.update(JSON.stringify(json), 'utf8', 'hex');
   enc += cipher.final('hex');
   enc += 'o' + exports.makeAMD5(enc).slice(20);
   return enc;
@@ -70,12 +70,12 @@ exports.encrypt = (json, key) => {
 exports.decrypt = (str, key) => {
   let myKey = key;
   if (myKey === undefined) myKey = config.key;
-  var data = str.split('o');
+  let data = str.split('o');
   if (exports.makeAMD5(data[0], myKey).slice(20) == data[1]) {
-    var decipher = crypto.createDecipher('aes192', myKey);
-    var dec = decipher.update(data[0], 'hex', 'utf8');
+    let decipher = crypto.createDecipher('aes192', myKey);
+    let dec = decipher.update(data[0], 'hex', 'utf8');
     dec += decipher.final('utf8');
-    var reg = new RegExp('"', "g");
+    let reg = new RegExp('"', "g");
     dec = dec.replace(reg, "");
     return dec;
   } else {
@@ -86,7 +86,7 @@ exports.decrypt = (str, key) => {
 exports.makeASha = function(str, sign) {
   let mySign = sign;
   if (sign === undefined) mySign = config.key;
-  var hashSHA = crypto.createHash('sha512');
+  let hashSHA = crypto.createHash('sha512');
   hashSHA.update(str + mySign);
   return hashSHA.digest('hex');
 }; // 散列
@@ -94,7 +94,7 @@ exports.makeASha = function(str, sign) {
 exports.makeAMD5 = function(str, sign) {
   let mySign = sign;
   if (sign === undefined) mySign = config.key;
-  var hashSHA = crypto.createHash('md5');
+  let hashSHA = crypto.createHash('md5');
   hashSHA.update(str + mySign);
   return hashSHA.digest('hex');
 }; // 散列
@@ -182,7 +182,7 @@ exports.logout = (req, res, next) => { // 退出登陆
 };
 
 exports.makeToken = () => { // 生成网站令牌
-  var token = config.webId + '&' + exports.getNowTime();
+  let token = config.webId + '&' + exports.getNowTime();
   token = exports.encrypt(token);
   return token;
 };
