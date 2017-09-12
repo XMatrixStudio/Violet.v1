@@ -570,6 +570,11 @@
     getUserInfo();
     $('#image').cropper(option);
     $('#toTabAvatarInput').change(() => {
+      let fileSize = document.getElementById("toTabAvatarInput").files[0].size / 1024;
+      if (fileSize > 1024) {
+        sendNotice("图片大小不能超过1MB");
+        return;
+      }
       let arr = document.getElementById('toTabAvatarInput').files;
       if (arr.length == 0) {
         return 0;

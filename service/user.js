@@ -381,6 +381,10 @@ exports.mSetUserInfo = (req, res, next) => {
 exports.changeAvatar = function(req, res, next) {
   let form = new multiparty.Form();
   form.parse(req, function(err, fields, files) {
+    if (files.croppedImage[0].size > 1048576) {
+      res.send({ state: 'failed', reason: 'BIG_FILE' });
+      return;
+    }
     uploadToCos(verify.getUserId(res) + '.png', files.croppedImage[0]).then((data) => {
       userDB.findOne({ uid: verify.getUserId(res) }, (err, val) => {
         val.avatar = true;
